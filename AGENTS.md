@@ -14,7 +14,7 @@ A collection of skills for OpenCode and Zed for senior software engineers. Skill
 
 **Step 1 — Install OpenCode in Zed**
 
-Open Zed's Agent Panel (`cmd+?` / `ctrl+?` or click ✨ in the status bar). Open Agent Settings and install OpenCode from the ACP Registry. OpenCode manages its own auth and model selection independently of Zed Agent.
+Open Zed's Agent Panel (`ctrl-?` or click ✨ in the status bar). Open Agent Settings and install OpenCode from the ACP Registry. OpenCode manages its own auth and model selection independently of Zed Agent.
 
 **Step 2 — Install skills**
 
