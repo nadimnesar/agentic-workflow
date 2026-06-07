@@ -6,23 +6,46 @@ Automatically selects the best skill(s) for a given user request. Supports multi
 ## Classification Logic
 
 The router classifies intent along two axes:
-- **Domain**: The subject area (code-generation, bug-fixing, design, testing, etc.)
-- **Action**: The type of work requested (create, fix, refactor, analyze, research)
+- **Phase**: The development lifecycle phase (Define, Plan, Build, Verify, Review, Ship)
+- **Domain**: The subject area within that phase
+
+### Phase Grouping
+
+```
+Define Phase      — What are we building?
+Plan Phase        — How do we break this down?
+Build Phase       — Write the code
+Verify Phase      — Does it work correctly?
+Review Phase      — Is it good enough to ship?
+Ship Phase        — Deploy and document
+```
 
 ### Intent-to-Skill Mapping
 
 ```
-User Intent → Primary Skill → Optional Secondary Skills
-─────────────────────────────────────────────────────────
-"Build a new feature"        → code-generation   → testing
-"Something is broken"        → bug-fixing        → testing
-"Design the architecture"    → system-design     → api-design
-"Improve this code"          → refactoring       → testing
-"Add an API endpoint"        → api-design        → code-generation
-"Make it more secure"        → security-review   → refactoring
-"Write tests"                → testing           → code-generation
-"How should I structure X"   → system-design     → api-design
-"Research best practices"    → researcher agent  → system-design
+User Intent              → Phase    → Primary Skill           → Optional Secondary
+─────────────────────────────────────────────────────────────────────────────────────
+"Define what we need"    → Define   → interview-me            → idea-refine, spec-driven-development
+"Design architecture"    → Define   → system-design           → (none)
+"Shape a vague idea"     → Define   → idea-refine             → interview-me
+"Break down the work"    → Plan     → planning-and-task-breakdown → (none)
+"Build a new feature"    → Build    → incremental-implementation → test-driven-development
+"Add an API endpoint"    → Build    → api-and-interface-design → incremental-implementation
+"Build a UI component"   → Build    → frontend-ui-engineering → incremental-implementation
+"Generate boilerplate"   → Build    → code-generation         → (none)
+"Write tests"            → Verify   → test-driven-development → testing
+"Something is broken"    → Verify   → debugging-and-error-recovery → test-driven-development
+"Security audit needed"  → Review   → security-review         → security-and-hardening
+"Make it more secure"    → Review   → security-and-hardening  → security-review
+"Improve code quality"   → Review   → code-review-and-quality → code-simplification
+"Simplify this code"     → Review   → code-simplification     → code-review-and-quality
+"Refactor for clarity"   → Review   → refactoring             → testing
+"Optimize performance"   → Review   → performance-optimization → (none)
+"Set up CI/CD"           → Ship     → ci-cd-and-automation    → (none)
+"Deprecate an old API"   → Ship     → deprecation-and-migration → documentation-and-adrs
+"Document decisions"     → Ship     → documentation-and-adrs  → (none)
+"Prepare for launch"     → Ship     → shipping-and-launch     → (none)
+"Research best practices"→ (any)    → researcher agent        → context-engineering
 ```
 
 ## Routing Algorithm
@@ -60,17 +83,27 @@ When no skill matches sufficiently, the router responds with:
 
 ```
 I couldn't confidently map your request to a known skill.
-Available skills: code-generation, bug-fixing, system-design,
-                  api-design, refactoring, testing, security-review
+Available phases: Define, Plan, Build, Verify, Review, Ship
+(28 skills across all phases)
 
 Could you clarify one of:
-• What you want to build (code-generation)
-• What's broken (bug-fixing)
-• What you want to design (system-design, api-design)
-• What needs improvement (refactoring)
-• What needs testing (testing)
-• What needs security review (security-review)
+• What stage of development are you in?
+• What are you trying to accomplish?
+• The researcher agent can help explore if you're unsure.
 ```
+
+Reference checklists are available in `references/` for quick lookups:
+- `references/testing-patterns.md`
+- `references/security-checklist.md`
+- `references/performance-checklist.md`
+
+## Reference Checklists
+
+Skills can pull in supplementary checklists from `references/` for deeper domain coverage without repeating content in every skill:
+
+- `references/testing-patterns.md` — Test structure, assertions, mocking, React/API patterns
+- `references/security-checklist.md` — OWASP Top 10, auth, input validation, infrastructure
+- `references/performance-checklist.md` — Core Web Vitals, frontend/backend budgets, tooling
 
 ## Router Configuration
 

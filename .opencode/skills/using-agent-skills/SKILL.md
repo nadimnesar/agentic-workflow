@@ -144,29 +144,40 @@ These are the subtle errors that look like productivity but create problems:
 For a complete feature, the typical skill sequence is:
 
 ```
-1.  interview-me                → Extract what the user actually wants
-2.  idea-refine                 → Refine vague ideas
-3.  spec-driven-development     → Define what we're building
-4.  planning-and-task-breakdown → Break into verifiable chunks
-5.  context-engineering         → Load the right context
-6.  source-driven-development   → Verify against official docs
-7.  code-generation             → Scaffold or generate implementation
-8.  incremental-implementation  → Build slice by slice
-9.  doubt-driven-development    → Cross-examine non-trivial decisions in-flight
+ 1. interview-me                → Extract what the user actually wants
+ 2. idea-refine                 → Refine vague ideas
+ 3. spec-driven-development     → Define what we're building
+ 4. planning-and-task-breakdown → Break into verifiable chunks
+ 5. context-engineering         → Load the right context
+ 6. source-driven-development   → Verify against official docs
+ 7. code-generation             → Scaffold or generate implementation
+ 8. incremental-implementation  → Build slice by slice
+ 9. doubt-driven-development    → Cross-examine non-trivial decisions in-flight
 10. system-design               → Design architecture when needed
 11. refactoring                 → Restructure as needed
 12. test-driven-development     → Prove each slice works
 13. testing                     → Comprehensive test coverage
 14. security-review             → Security audit before merge
 15. code-review-and-quality     → Review before merge
-11. code-simplification         → Reduce unnecessary complexity while preserving behavior
-12. git-workflow-and-versioning → Clean commit history
-13. documentation-and-adrs      → Document decisions
-14. deprecation-and-migration   → Retire old systems and move users safely when needed
-15. shipping-and-launch         → Deploy safely
+16. code-simplification         → Reduce unnecessary complexity while preserving behavior
+17. git-workflow-and-versioning → Clean commit history
+18. documentation-and-adrs      → Document decisions
+19. deprecation-and-migration   → Retire old systems and move users safely when needed
+20. shipping-and-launch         → Deploy safely
 ```
 
 Not every task needs every skill. A bug fix might only need: `debugging-and-error-recovery` → `test-driven-development` → `code-review-and-quality`.
+
+## Reference Checklists
+
+Supplementary checklists are available in `references/` for deeper domain coverage.
+Skills can reference these instead of repeating content:
+
+| Checklist | Covers |
+|---|---|
+| `references/testing-patterns.md` | Test structure, assertions, mocking, React/API patterns, anti-patterns |
+| `references/security-checklist.md` | OWASP Top 10, auth, input validation, infrastructure hardening |
+| `references/performance-checklist.md` | Core Web Vitals, frontend/backend budgets, measurement tools |
 
 ## Quick Reference
 
