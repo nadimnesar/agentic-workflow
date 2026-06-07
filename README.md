@@ -1,1 +1,1 @@
-# java-dev-agentic-workflow
+# agentic-workflow
