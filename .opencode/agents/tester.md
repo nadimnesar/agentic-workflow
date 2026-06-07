@@ -16,14 +16,15 @@ task:
   implementation:
     ref: "task T2 output"
     files:
-      - path: "src/api/users.py"
+      - path: "src/main/java/com/example/user/UserController.java"
+      - path: "src/main/java/com/example/user/UserRepository.java"
     summary: "Added GET /api/v1/users/search endpoint"
   acceptance_criteria:
     - "Endpoint returns 200 with paginated results"
     - "Search filters by name and email"
   existing_tests:
-    - path: "tests/test_users.py"
-      framework: "pytest"
+    - path: "src/test/java/com/example/user/UserControllerTest.java"
+      framework: "junit5"
 ```
 
 ## Output Contract
@@ -33,13 +34,13 @@ result:
   status: "completed" | "failed"
   artifacts:
     - type: "new_test_file"
-      path: "tests/test_users_search.py"
+      path: "src/test/java/com/example/user/UserControllerTest.java"
       test_count: 12
     - type: "updated_test_file"
-      path: "tests/test_users.py"
-      description: "Added regression tests for existing behavior"
+      path: "src/test/java/com/example/user/UserRepositoryTest.java"
+      description: "Added @DataJpaTest slice for search query"
     - type: "bug_report"
-      description: "Found that search returns 500 for unescaped % character"
+      description: "Search throws DataIntegrityViolation for unescaped % character"
       severity: "medium"
       assigned_to: "builder"
   coverage:
@@ -52,9 +53,13 @@ result:
 
 ### Test Design
 - Follow the testing pyramid: many unit tests, fewer integration tests, few end-to-end tests.
-- Each test should test one logical behavior. Use descriptive test names.
+- Use JUnit 5 (`@Test`, `@ParameterizedTest`, `@DisplayName`) for structure.
+- Each test should test one logical behavior. Use descriptive `@DisplayName`.
 - Structure tests as: Arrange → Act → Assert (AAA pattern).
-- Use fixtures for repeated setup; avoid global state in tests.
+- Use Mockito (`@Mock`, `@InjectMocks`, `ArgumentCaptor`) for mocking external dependencies.
+- Use `@SpringBootTest` or test slices (`@WebMvcTest`, `@DataJpaTest`) for integration.
+- Use Testcontainers for database/Elasticsearch/Redis integration tests.
+- Use AssertJ for fluent assertions (`assertThat(actual).isEqualTo(expected)`).
 
 ### Coverage Targets
 - Aim for at least 90% branch coverage for new code.

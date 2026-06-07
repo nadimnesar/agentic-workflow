@@ -14,13 +14,13 @@ review_request:
   artifact:
     type: "code" | "design_doc" | "test_suite"
     files:
-      - path: "src/api/users.py"
+      - path: "src/main/java/com/example/user/UserController.java"
         diff: "..."  # or reference to the change
-      - path: "tests/test_users_search.py"
+      - path: "src/test/java/com/example/user/UserControllerTest.java"
   context:
     - "Original requirements"
     - "Acceptance criteria"
-    - "Codebase conventions"
+    - "Codebase conventions (Spring Boot, JPA, Liquibase)"
   effort: "medium"
 ```
 
@@ -41,14 +41,15 @@ review:
   findings:
     - severity: "blocking" | "major" | "minor" | "nitpick"
       category: "correctness" | "design" | "style" | "test" | "security"
-      file: "src/api/users.py"
+      file: "src/main/java/com/example/user/UserController.java"
       line: 45
-      message: "User.email can be None but is not handled"
-      suggestion: "Add Optional[str] type hint and None check"
+      message: "User.email can be null but @NotNull validation is missing"
+      suggestion: "Add @NotNull @Email UserDTO.email with Jakarta Validation"
   strengths:
-    - "Well-structured cursor pagination with proper encapsulation"
-    - "Comprehensive test coverage for edge cases"
-  summary: "Solid implementation. One blocking issue with None handling. Approve after fix."
+    - "Clean controller with proper @ExceptionHandler separation"
+    - "Used @DataJpaTest slice for repository tests"
+    - "Liquibase changelog follows existing naming convention"
+  summary: "Solid implementation. One blocking issue with email validation. Approve after fix."
 ```
 
 ## Behavior Rules

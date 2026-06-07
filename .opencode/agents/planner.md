@@ -69,7 +69,7 @@ plan:
 
 ## Example
 
-**Input:** "Add a paginated search endpoint to the user API. It should search by name and email."
+**Input:** "Add a paginated search endpoint to UserController. Search by name and email. Spring Boot + JPA."
 **Output:**
 ```yaml
 summary: "Add GET /api/v1/users/search with pagination and name/email filtering"
@@ -77,25 +77,28 @@ tasks:
   - id: "T1"
     description: "Design the search API contract"
     agent: "builder"
-    skill: "api-design"
+    skill: "api-and-interface-design"
     dependencies: []
     acceptance_criteria:
-      - "OpenAPI spec defines request/response"
-      - "Pagination uses cursor-based approach"
+      - "OpenAPI spec defines request/response (SpringDoc)"
+      - "Pagination uses Spring Pageable"
   - id: "T2"
     description: "Implement the search endpoint"
     agent: "builder"
     skill: "code-generation"
     dependencies: ["T1"]
     acceptance_criteria:
-      - "Endpoint returns 200 with paginated results"
-      - "Search filters by name and email"
+      - "RestController returns ResponseEntity<Page<UserDTO>>"
+      - "Specification pattern for dynamic filtering"
+      - "Liquibase migration if new indexes needed"
   - id: "T3"
     description: "Write tests for search endpoint"
     agent: "tester"
     skill: "testing"
     dependencies: ["T2"]
     acceptance_criteria:
+      - "@WebMvcTest slice for controller"
+      - "@DataJpaTest slice for repository"
       - "Tests cover empty results, pagination, special chars"
 parallel_groups:
   - group: "A": tasks: ["T1"]

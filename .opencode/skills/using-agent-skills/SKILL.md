@@ -175,9 +175,10 @@ Skills can reference these instead of repeating content:
 
 | Checklist | Covers |
 |---|---|
-| `references/testing-patterns.md` | Test structure, assertions, mocking, React/API patterns, anti-patterns |
-| `references/security-checklist.md` | OWASP Top 10, auth, input validation, infrastructure hardening |
-| `references/performance-checklist.md` | Core Web Vitals, frontend/backend budgets, measurement tools |
+| `references/tech-stack.md` | Canonical tech stack: Java 21, Spring Boot 3, Angular 17, PostgreSQL, AWS, Kafka |
+| `references/testing-patterns.md` | JUnit 5, Mockito, AssertJ, Spring Boot test slices, Testcontainers |
+| `references/security-checklist.md` | Spring Security, OWASP Top 10, auth, input validation, AWS infra |
+| `references/performance-checklist.md` | Spring Boot tuning, Angular perf, PostgreSQL queries |
 
 ## Quick Reference
 

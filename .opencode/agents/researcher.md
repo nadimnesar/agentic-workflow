@@ -9,11 +9,12 @@
 ## Input Contract
 ```yaml
 research_request:
-  query: "What's the recommended way to implement cursor-based pagination in FastAPI?"
+  query: "Best approach for cursor-based keyset pagination with Spring Data JPA?"
   context:
-    - "Using SQLAlchemy with PostgreSQL"
+    - "Using PostgreSQL with Spring Boot 3.x"
     - "Current page size: 20"
     - "Need to support sort by multiple fields"
+    - "Stack: Java 21, Hibernate 6, JPA Specifications"
   source: "any" | "documentation" | "stackoverflow" | "github" | "official"
   urgency: "low" | "medium" | "high"
 ```
@@ -21,37 +22,30 @@ research_request:
 ## Output Contract
 ```yaml
 research_result:
-  query: "What's the recommended way to implement cursor-based pagination in FastAPI?"
+  query: "Best approach for cursor-based keyset pagination with Spring Data JPA?"
   sources_consulted:
-    - url: "https://fastapi.tiangolo.com/tutorial/sql-databases/"
-      title: "FastAPI SQL Databases"
+    - url: "https://docs.spring.io/spring-data/jpa/reference/repositories/core-extensions.html"
+      title: "Spring Data JPA Reference — Scroll API"
       relevance: "high"
-    - url: "https://github.com/uriyyo/fastapi-pagination"
-      title: "fastapi-pagination library"
-      relevance: "medium"
+    - url: "https://vladmihalcea.com/keyset-pagination-spring-data-jpa/"
+      title: "Keyset Pagination with Spring Data JPA — Vlad Mihalcea"
+      relevance: "high"
   findings:
-    - topic: "Cursor-based pagination with SQLAlchemy"
-      recommendation: "Use `WHERE (sort_field, id) > (cursor_value, cursor_id)` pattern"
+    - topic: "Spring Data JPA Scroll API (since 3.1)"
+      recommendation: "Use Window/Scroll API for keyset pagination"
       code_example: |
-        async def get_users(cursor: str | None = None, limit: int = 20):
-            query = select(User).order_by(User.name, User.id)
-            if cursor:
-                cursor_name, cursor_id = decode_cursor(cursor)
-                query = query.where(
-                    (User.name, User.id) > (cursor_name, cursor_id)
-                )
-            query = query.limit(limit + 1)
-            results = await db.execute(query)
-            ...
-    - topic: "Alternative libraries"
-      options:
-        - name: "fastapi-pagination"
-          pros: ["Easy to use", "Supports multiple backends"]
-          cons: ["Less control over query structure"]
-        - name: "sqlakeyset"
-          pros: ["Keyset pagination", "Works with SQLAlchemy"]
-          cons: ["Limited FastAPI integration"]
-  confidence: "high"  # high | medium | low — based on source authority and consistency
+        @EntityGraph(attributePaths = {"profile"})
+        Window<User> findByNameContaining(String name, ScrollPosition position, Pageable pageable);
+    - topic: "Alternative: JPA Criteria with custom query"
+      recommendation: "Use WHERE (name, id) > (:cursorName, :cursorId) with JPQL"
+      code_example: |
+        @Query("""
+            SELECT u FROM User u
+            WHERE (:cursor IS NULL OR (u.name, u.id) > (:cursorName, :cursorId))
+            ORDER BY u.name ASC, u.id ASC
+        """)
+        Slice<User> searchUsers(@Param("cursor") String cursor, Pageable pageable);
+  confidence: "high"
   took_ms: 3420
 ```
 

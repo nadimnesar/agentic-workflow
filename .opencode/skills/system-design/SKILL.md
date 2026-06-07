@@ -29,10 +29,10 @@ requirements:
   constraints:
     - "must use existing PostgreSQL instance"
     - "team has 5 engineers"
-    - "must be deployable within 3 months"
+    - "preferred stack: Java 21, Spring Boot, Kafka, AWS"
   context:
-    - "existing monolith at src/backend/"
-    - "current auth via session cookies"
+    - "existing monolith at src/main/java/com/example/"
+    - "current auth via JWT tokens"
 ```
 
 ## Output Format
@@ -46,37 +46,49 @@ architecture:
   components:
     - name: "api-gateway"
       responsibility: "rate limiting, auth, routing"
-      technology: "nginx + lua"
+      technology: "Spring Cloud Gateway + Nginx"
     - name: "document-service"
       responsibility: "CRUD + real-time sync"
-      technology: "go + websocket"
+      technology: "Spring Boot 3 + WebSocket + Kafka"
+    - name: "notification-service"
+      responsibility: "email/push notifications"
+      technology: "Spring Boot + RabbitMQ"
   data_model:
     entities:
       - name: "Document"
+        storage: "PostgreSQL (JPA entity)"
+        search: "Elasticsearch index"
+        cache: "Redis (read model)"
         fields: [id, title, content, owner_id, created_at, updated_at]
+  infrastructure:
+    compute: "EKS (Kubernetes on AWS)"
+    storage: "RDS Aurora + ElastiCache Redis + OpenSearch"
+    messaging: "Amazon MSK (Kafka) + SQS"
+    object_store: "S3 with CloudFront CDN"
   trade_offs:
-    - decision: "Use WebSockets instead of SSE"
-      rationale: "Bidirectional communication needed for collaborative editing"
-      cost: "More complex horizontal scaling"
+    - decision: "Use Kafka over direct WebSocket"
+      rationale: "Event-driven decoupling, replay capability, multiple consumers"
+      cost: "Higher operational complexity, added latency (~10ms)"
   adr_links:
-    - "docs/adrs/2024-01-websockets-for-collab.md"
+    - "docs/adrs/2024-01-kafka-for-domain-events.md"
 ```
 
 ## Execution Steps
-1. **Requirements analysis** — Clarify functional and non-functional requirements.
+1. **Requirements analysis** — Clarify functional and non-functional requirements. Refer to `references/tech-stack.md` for default technology preferences.
 2. **Scope boundaries** — Define what is in and out of scope.
 3. **High-level design** — Identify major components and their responsibilities.
-4. **Data model** — Design entities, relationships, and data flow.
-5. **Interface contracts** — Define APIs, event schemas, and integration points.
-6. **Trade-off analysis** — For each design decision, document alternatives considered and rationale.
-7. **Review preparation** — Format as a review-ready document with open questions.
+4. **Data model** — Design entities, relationships, and data flow (JPA entities, indexes, search mappings).
+5. **Interface contracts** — Define REST APIs (SpringDoc OpenAPI), event schemas (Avro/JSON for Kafka), and integration points.
+6. **Infrastructure decisions** — Compute (EKS/EC2), storage (RDS/DynamoDB/S3), messaging (Kafka/RabbitMQ/SQS).
+7. **Trade-off analysis** — For each design decision, document alternatives considered and rationale.
+8. **Review preparation** — Format as a review-ready document with open questions.
 
 ## Examples
 
 ### Example 1: URL shortener
-**Input:** "Design a URL shortener like bit.ly. 100M URLs, 10M redirects/day."
-**Output:** Design with write-sharded PostgreSQL, Redis cache layer, base62 encoding, and CQRS pattern.
+**Input:** "Design a URL shortener. Stack: Java 21, Spring Boot, PostgreSQL, Redis, AWS. 100M URLs, 10M redirects/day."
+**Output:** Design with Spring Boot REST API, write-sharded PostgreSQL (RDS Aurora), Redis cache layer with Caffeine L2 cache, base62 encoding, Liquibase migrations, deployed on EKS with HPA.
 
 ### Example 2: Real-time dashboard
-**Input:** "Design a real-time analytics dashboard with sub-second refresh."
-**Output:** Event-sourced pipeline with Kafka → Flink → Materialized view in Redis → WebSocket push to dashboard.
+**Input:** "Design a real-time analytics dashboard. Stack: Spring Boot, Kafka, Elasticsearch, Angular. Sub-second refresh."
+**Output:** Event-sourced pipeline with Spring Kafka producer → Kafka → Kafka Streams aggregation → Elasticsearch → Spring Boot read API → Angular with SSE push.

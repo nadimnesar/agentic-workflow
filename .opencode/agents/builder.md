@@ -11,15 +11,16 @@
 ```yaml
 task:
   id: "T2"
-  description: "Implement the search endpoint"
-  skill: "code-generation" | "api-design" | "refactoring" | ...
+  description: "Implement search endpoint in UserController"
+  skill: "code-generation" | "api-and-interface-design" | "refactoring" | ...
   context:
     relevant_files:
-      - path: "src/api/users.py"
-      - path: "src/models/user.py"
+      - path: "src/main/java/com/example/api/UserController.java"
+      - path: "src/main/java/com/example/repository/UserRepository.java"
     conventions:
-      - "uses pydantic for validation"
-      - "error responses follow {error: string, code: int} format"
+      - "uses MapStruct for DTO mapping"
+      - "error responses use @ExceptionHandler in @ControllerAdvice"
+      - "package: com.example.user"
   acceptance_criteria:
     - "Endpoint returns 200 with paginated results"
     - "Search filters by name and email"
@@ -33,22 +34,23 @@ result:
   status: "completed" | "failed" | "partial"
   artifacts:
     - type: "code"
-      path: "src/api/users.py"
-      summary: "Added search endpoint with cursor pagination"
+      path: "src/main/java/com/example/user/UserController.java"
+      summary: "Added GET /api/v1/users/search with Spring Pageable"
     - type: "test"
-      path: "tests/test_users_search.py"
-      summary: "Tests for search: empty, pagination, special chars"
-    - type: "test_update"
-      path: "tests/test_users.py"
-      summary: "Updated existing user tests for backward compat"
+      path: "src/test/java/com/example/user/UserControllerTest.java"
+      summary: "@WebMvcTest for search: empty, pagination, special chars"
+    - type: "migration"
+      path: "src/main/resources/db/changelog/changelog-002.yml"
+      summary: "Added composite index on (name, email)"
   validation:
-    lint: "passed"
-    type_check: "passed"
+    build: "passed"
+    checkstyle: "passed"
     test_count: 12
     new_coverage: "+8%"
   notes:
-    - "Used ILIKE for case-insensitive search (PostgreSQL)"
-    - "Added index on (name, email) for performance"
+    - "Used JPA Specification for dynamic filtering"
+    - "Added index via Liquibase changelog"
+    - "Uses MapStruct for User -> UserDTO mapping"
 ```
 
 ## Behavior Rules
@@ -59,7 +61,8 @@ result:
 
 ### Convention Adherence
 - Before writing code, read 2-3 existing files in the same directory to infer conventions.
-- Match existing: naming style, import ordering, error handling patterns, typing level, comment style.
+- Match existing: package structure, naming style (CamelCase classes, camelCase methods), import ordering, error handling patterns, annotation usage, comment style.
+- Default to Spring Boot conventions unless the codebase diverges.
 - Do not introduce new patterns unless the task explicitly requires it.
 
 ### Production Quality

@@ -101,9 +101,10 @@ Reference checklists are available in `references/` for quick lookups:
 
 Skills can pull in supplementary checklists from `references/` for deeper domain coverage without repeating content in every skill:
 
-- `references/testing-patterns.md` — Test structure, assertions, mocking, React/API patterns
-- `references/security-checklist.md` — OWASP Top 10, auth, input validation, infrastructure
-- `references/performance-checklist.md` — Core Web Vitals, frontend/backend budgets, tooling
+- `references/tech-stack.md` — Canonical technology preferences (Java 21, Spring Boot 3, Angular 17, PostgreSQL, AWS, Kafka)
+- `references/testing-patterns.md` — JUnit 5, Mockito, AssertJ, Spring Boot test slices, Testcontainers
+- `references/security-checklist.md` — Spring Security, OWASP Top 10, auth, input validation, AWS infra
+- `references/performance-checklist.md` — Spring Boot tuning, Angular performance, PostgreSQL query optimization
 
 ## Router Configuration
 

@@ -20,14 +20,14 @@ Design and generate comprehensive test suites including unit tests, integration 
 ```yaml
 test_target:
   files:
-    - path: "src/services/billing.py"
-      functions:
-        - "calculate_invoice"
-        - "apply_credit"
+    - path: "src/main/java/com/example/billing/BillingService.java"
+      methods:
+        - "calculateInvoice"
+        - "applyCredit"
   test_levels: ["unit", "integration"]
-  framework: "pytest" | "jest" | "go-test" | ...
+  framework: "junit5" | "jasmine" | "go-test" | ...
   existing_tests:
-    path: "tests/test_billing.py"
+    path: "src/test/java/com/example/billing/BillingServiceTest.java"
     coverage_percent: 34
   requirements:
     - "edge cases for empty invoices"
@@ -38,44 +38,45 @@ test_target:
 ## Output Format
 ```yaml
 test_suite:
-  framework: "pytest"
+  framework: "junit5"
+  build_tool: "maven"
   files:
-    - path: "tests/test_billing.py"
+    - path: "src/test/java/com/example/billing/BillingServiceTest.java"
       coverage_delta: "+45%"
       tests:
-        - name: "test_calculate_invoice_empty"
+        - name: "calculateInvoice_shouldReturnZero_whenNoItems"
           type: "unit"
           coverage: "edge-case"
-        - name: "test_calculate_invoice_with_items"
+        - name: "calculateInvoice_shouldApplyDiscount_whenEligible"
           type: "unit"
           coverage: "happy-path"
-        - name: "test_apply_credit_concurrent"
+        - name: "applyCredit_concurrentModification"
           type: "integration"
           coverage: "race-condition"
   property_tests:
     - "discount is never negative"
     - "total always equals sum of line items"
   fixtures:
-    - name: "sample_invoice"
-      scope: "module"
+    - name: "sampleInvoice"
+      factory: "InvoiceTestFactory.createDefault()"
 ```
 
 ## Execution Steps
-1. **Coverage analysis** — Identify untested branches, error paths, and edge cases.
-2. **Test structure design** — Organize tests by unit, integration, and property categories.
+1. **Coverage analysis** — Identify untested branches, error paths, and edge cases. Check JaCoCo report if available.
+2. **Test structure design** — Organize by level: unit (JUnit + Mockito), integration (@SpringBootTest / test slices), E2E.
 3. **Generate happy-path tests** — Test primary functionality with valid inputs.
-4. **Generate edge-case tests** — Boundary values, empty states, null inputs, large inputs.
-5. **Generate error-path tests** — Invalid inputs, auth failures, resource exhaustion.
-6. **Property-based tests** — Invariants that must hold for all inputs.
-7. **Fixtures and factories** — Create reusable test data builders.
-8. **Verify** — Run full suite, measure new coverage, confirm zero regressions.
+4. **Generate edge-case tests** — Boundary values, null/empty inputs, large payloads.
+5. **Generate error-path tests** — Validation failures, auth failures (`@WithMockUser` / `@WithAnonymousUser`), resource exhaustion.
+6. **Parameterized tests** — Use `@ParameterizedTest` for multiple input variations.
+7. **Fixtures and factories** — Use Builder pattern or `@TestMethodOrder` for sequential test data.
+8. **Verify** — Run `mvn test`, check JaCoCo coverage, confirm zero regressions.
 
 ## Examples
 
-### Example 1: Invoice calculation
-**Input:** `calculate_invoice(items, discount_rate, tax_rate)`
-**Output:** Tests for empty items, 100% discount, zero tax, negative quantities (error), concurrent modifications, floating-point precision.
+### Example 1: Invoice calculation (Spring Boot)
+**Input:** `BillingService.calculateInvoice(List<LineItem> items, BigDecimal discountRate, BigDecimal taxRate)`
+**Output:** `@ExtendWith(MockitoExtension.class)` tests for empty items, 100% discount, zero tax, negative quantities (`assertThrows`), concurrent modifications with `@Nested` + `@RepeatedTest`.
 
-### Example 2: User registration
-**Input:** `register_user(email, password, profile)`
-**Output:** Tests for valid registration, duplicate email, weak password, SQL injection attempt, special characters in name, email normalization.
+### Example 2: User registration (Spring Boot)
+**Input:** `AuthService.registerUser(CreateUserRequest request)`
+**Output:** Tests with `@ParameterizedTest` + `@NullSource` + `@EmptySource` for email, `@WebMvcTest` for controller validation, `@DataJpaTest` for unique constraint, Testcontainers for real PostgreSQL.
