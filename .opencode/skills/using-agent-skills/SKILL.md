@@ -23,20 +23,25 @@ Task arrives
     ├── Implementing code? ────────────→ incremental-implementation
     │   ├── UI work? ─────────────────→ frontend-ui-engineering
     │   ├── API work? ────────────────→ api-and-interface-design
+    │   ├── System architecture? ─────→ system-design
+    │   ├── Scaffolding / boilerplate? ─→ code-generation
     │   ├── Need better context? ─────→ context-engineering
     │   ├── Need doc-verified code? ───→ source-driven-development
     │   └── Stakes high / unfamiliar code? ──→ doubt-driven-development
     ├── Writing/running tests? ────────→ test-driven-development
-    │   └── Browser-based? ───────────→ browser-testing-with-devtools
+    │   ├── Browser-based? ───────────→ browser-testing-with-devtools
+    │   └── Comprehensive test suite? ─→ testing
     ├── Something broke? ──────────────→ debugging-and-error-recovery
     ├── Reviewing code? ───────────────→ code-review-and-quality
     │   ├── Too complex? ─────────────→ code-simplification
     │   ├── Security concerns? ───────→ security-and-hardening
+    │   ├── Security audit? ──────────→ security-review
     │   └── Performance concerns? ────→ performance-optimization
     ├── Committing/branching? ─────────→ git-workflow-and-versioning
     ├── CI/CD pipeline work? ──────────→ ci-cd-and-automation
     ├── Deprecating/migrating? ────────→ deprecation-and-migration
     ├── Writing docs/ADRs? ───────────→ documentation-and-adrs
+    ├── Refactoring existing code? ────→ refactoring
     └── Deploying/launching? ─────────→ shipping-and-launch
 ```
 
@@ -145,10 +150,15 @@ For a complete feature, the typical skill sequence is:
 4.  planning-and-task-breakdown → Break into verifiable chunks
 5.  context-engineering         → Load the right context
 6.  source-driven-development   → Verify against official docs
-7.  incremental-implementation  → Build slice by slice
-8.  doubt-driven-development    → Cross-examine non-trivial decisions in-flight
-9.  test-driven-development     → Prove each slice works
-10. code-review-and-quality     → Review before merge
+7.  code-generation             → Scaffold or generate implementation
+8.  incremental-implementation  → Build slice by slice
+9.  doubt-driven-development    → Cross-examine non-trivial decisions in-flight
+10. system-design               → Design architecture when needed
+11. refactoring                 → Restructure as needed
+12. test-driven-development     → Prove each slice works
+13. testing                     → Comprehensive test coverage
+14. security-review             → Security audit before merge
+15. code-review-and-quality     → Review before merge
 11. code-simplification         → Reduce unnecessary complexity while preserving behavior
 12. git-workflow-and-versioning → Clean commit history
 13. documentation-and-adrs      → Document decisions
@@ -172,13 +182,18 @@ Not every task needs every skill. A bug fix might only need: `debugging-and-erro
 | Build | context-engineering | Right context at the right time |
 | Build | frontend-ui-engineering | Production-quality UI with accessibility |
 | Build | api-and-interface-design | Stable interfaces with clear contracts |
+| Build | system-design | High-level architecture and trade-off analysis |
+| Build | code-generation | Scaffold modules and generate boilerplate |
 | Verify | test-driven-development | Failing test first, then make it pass |
 | Verify | browser-testing-with-devtools | Chrome DevTools MCP for runtime verification |
 | Verify | debugging-and-error-recovery | Reproduce → localize → fix → guard |
+| Verify | testing | Comprehensive test suite generation |
 | Review | code-review-and-quality | Five-axis review with quality gates |
 | Review | code-simplification | Preserve behavior while reducing unnecessary complexity |
 | Review | security-and-hardening | OWASP prevention, input validation, least privilege |
+| Review | security-review | Vulnerability analysis with severity scoring |
 | Review | performance-optimization | Measure first, optimize only what matters |
+| Review | refactoring | Behavior-preserving restructuring |
 | Ship | git-workflow-and-versioning | Atomic commits, clean history |
 | Ship | ci-cd-and-automation | Automated quality gates on every change |
 | Ship | deprecation-and-migration | Remove old systems and migrate users safely |

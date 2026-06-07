@@ -1,283 +1,192 @@
-# AGENTS.md
+# Agentic Workflow System
 
-This file provides guidance to AI coding agents when working with code in this repository. The primary workflow is **OpenCode running as an ACP-integrated External Agent inside Zed**.
-
-## Repository Overview
-
-A collection of skills for OpenCode and Zed for senior software engineers. Skills are packaged instructions and scripts that extend OpenCode's capabilities.
+This file defines the core agentic workflow lifecycle for this project. All agents
+MUST read and follow these rules when operating.
 
 ---
 
-## Zed + OpenCode Setup
+## Lifecycle Overview
 
-### Installation
-
-**Step 1 — Install OpenCode in Zed**
-
-Open Zed's Agent Panel (`ctrl-?` or click ✨ in the status bar). Open Agent Settings and install OpenCode from the ACP Registry. OpenCode manages its own auth and model selection independently of Zed Agent.
-
-**Step 2 — Install skills**
-
-```bash
-# Project-local (recommended — committed to Git)
-cp -r skills/<skill-name> .opencode/skills/
-
-# Global (available across all projects)
-cp -r skills/<skill-name> ~/.config/opencode/skills/
+```
+User Request
+    │
+    ▼
+┌─────────────┐     ┌──────────────┐     ┌──────────────┐
+│  SKILL      │────▶│   PLANNER    │────▶│   BUILDER    │
+│  ROUTER     │     │   AGENT      │     │   AGENT      │
+└─────────────┘     └──────────────┘     └──────┬───────┘
+    │                                            │
+    │  (fallback)                                ▼
+    ▼                                     ┌──────────────┐
+┌─────────────┐     ┌──────────────┐     │   TESTER     │
+│ RESEARCHER  │────▶│   PLANNER    │     │   AGENT      │
+│ AGENT       │     │   (replan)   │     └──────┬───────┘
+└─────────────┘     └──────────────┘            │
+                                                ▼
+                                         ┌──────────────┐
+                                         │  REVIEWER    │
+                                         │  AGENT       │
+                                         └──────┬───────┘
+                                                │
+                                          ┌─────┴─────┐
+                                          │           │
+                                      Approved    Changes
+                                          │      Requested
+                                          ▼           │
+                                     ┌────────┐       │
+                                     │ DONE   │◀──────┘
+                                     └────────┘  (iterate)
 ```
 
-**Step 3 — Wire up custom instructions**
+### Phase 1: Route
+The skill router classifies the user's intent and selects the appropriate skill(s).
+If no skill matches sufficiently, it falls back to the researcher agent for context-
+gathering, then replans.
 
-AGENTS.md is auto-picked up by OpenCode. To pull in additional instruction files, add `opencode.json` at the project root:
+### Phase 2: Plan
+The planner decomposes the request into ordered tasks with a dependency graph.
+Each task is assigned a skill and an agent type. Parallelization opportunities are
+identified at this stage.
 
-```json
-{
-  "$schema": "https://opencode.ai/config.json",
-  "instructions": [
-    "AGENTS.md",
-    "docs/development-standards.md"
-  ]
-}
-```
+### Phase 3: Build
+The builder executes each task using the assigned skill. Tasks within the same
+dependency layer run in parallel when `parallel.enabled` is true. Each task
+produces an artifact (code, tests, docs).
 
-Commit both `AGENTS.md` and `opencode.json` to Git so the whole team shares them.
+### Phase 4: Test
+The tester validates each artifact against acceptance criteria. Tests are added
+or updated. Bugs found during testing are reported back to the builder for
+iteration.
 
-### Zed-specific Behavior
-
-- OpenCode threads open from the **Agent Panel** or **Threads Sidebar** inside Zed
-- Edits land in Zed's unified diff view — accept or reject before committing
-- Multiple OpenCode threads can run in parallel, each against its own Git worktree (see [Parallel Agents](#parallel-agents))
-- Zed's ACP architecture means **no agent traffic transits Zed's servers** — your code stays local
-- AGENTS.md is read by OpenCode as project rules and by Zed Agent as an Instructions file; both honor it
+### Phase 5: Review
+The reviewer evaluates all artifacts across correctness, maintainability,
+performance, security, and test quality. If changes are requested, the loop
+returns to the builder.
 
 ---
 
-## Skill-Driven Execution Model
+## Core Principles
 
-OpenCode uses a **skill-driven execution model** powered by the `skill` tool and this repository's `skills/` directory. Skills are loaded on-demand — only the name and description are in context at startup; the full `SKILL.md` loads only when the agent decides the skill is relevant.
+### 1. Autonomy
+Agents operate autonomously by default. Do not ask the user for confirmation on
+routine decisions (naming, file placement, library choice within established
+patterns). Escalate to the user only when:
+- The request is ambiguous and cannot be resolved from context.
+- A decision has irreversible consequences (data loss, security, public API breakage).
+- Two equally valid approaches exist and neither is clearly better.
 
-### Core Rules
+### 2. Minimal Interruption
+Batch questions into a single message. Prefer to make a reasonable default choice
+and note it for the user's review rather than blocking on every decision.
 
-- If a task matches a skill, you **MUST** invoke it via the `skill` tool
-- Skills live at `skills/<skill-name>/SKILL.md`
-- Never implement directly if a skill applies
-- Always follow skill instructions exactly — do not partially apply them
+### 3. Iterative Refinement
+Each phase may trigger a loop to a previous phase:
+- Tester finds a bug → Builder fixes it → Tester re-verifies.
+- Reviewer requests changes → Builder implements → Reviewer re-reviews.
+- After `max_iterations` (from execution config) without resolution, escalate to
+  the user with a summary of the impasse.
 
-### Intent → Skill Mapping
-
-| User intent | Skill |
-|---|---|
-| Feature / new functionality | `spec-driven-development` → `incremental-implementation`, `test-driven-development` |
-| Planning / breakdown | `planning-and-task-breakdown` |
-| Bug / failure / unexpected behavior | `debugging-and-error-recovery` |
-| Code review | `code-review-and-quality` |
-| Refactoring / simplification | `code-simplification` |
-| API or interface design | `api-and-interface-design` |
-| UI work | `frontend-ui-engineering` |
-
-### Lifecycle Mapping
-
-OpenCode does not support slash commands like `/spec` or `/plan`. The agent internally follows this lifecycle:
-
-| Phase | Skill |
-|---|---|
-| DEFINE | `spec-driven-development` |
-| PLAN | `planning-and-task-breakdown` |
-| BUILD | `incremental-implementation` + `test-driven-development` |
-| VERIFY | `debugging-and-error-recovery` |
-| REVIEW | `code-review-and-quality` |
-| SHIP | `shipping-and-launch` |
-
-### Execution Model
-
-For every request:
-
-1. Determine if any skill applies (even 1% chance)
-2. Invoke the appropriate skill using the `skill` tool
-3. Follow the skill workflow strictly
-4. Only proceed to implementation after required steps (spec, plan, etc.) are complete
-
-### Anti-Rationalization
-
-The following thoughts are **incorrect** and must be ignored:
-
-- "This is too small for a skill"
-- "I can just quickly implement this"
-- "I'll gather context first"
-
-Correct behavior: always check for and use skills first.
+### 4. Skill-First Execution
+Each task references a skill. Before executing, load the skill's SKILL.md and
+follow its execution steps precisely. If a task calls for a skill that does not
+exist, fall back to the researcher + planner to define a reasonable approach.
 
 ---
 
-## Parallel Agents
+## Context Management Strategy
 
-Zed supports running multiple OpenCode threads simultaneously, each in a dedicated Git worktree branched from HEAD. Use this for:
+### Context Preservation
+- The original user request is preserved in full throughout the entire lifecycle.
+- Each agent receives only the context slice it needs (the relevant subset of
+  files, requirements, and previous outputs).
+- Architecture decisions and acceptance criteria are carried forward across all
+  phases.
 
-- Writing tests in one thread while refactoring in another
-- Debugging a CI failure in parallel with a feature build
-- Running `code-reviewer`, `security-auditor`, and `test-engineer` concurrently for the `/ship` lifecycle (fan-out → merge)
+### Context Compression
+When approaching the token limit:
+1. Trim low-signal conversation history (back-and-forth that did not change the plan).
+2. Summarize completed tasks into their input/output contracts (discard internal
+   reasoning).
+3. Drop file contents that have been read but not modified.
+4. Preserve: acceptance criteria, architecture decisions, current task scope.
 
-Open a new parallel thread from the Agent Panel. Each thread gets its own terminal and file context.
+### Handoff Protocol
+When one agent passes work to another:
+```
+Previous Agent Output (as Input Contract for next agent)
+    │
+    ▼
+Next Agent reads input contract, loads relevant files, executes.
+    │
+    ▼
+Next Agent produces output contract and passes forward.
+```
+Each handoff includes only the information the next agent needs, not the full
+conversation history.
 
 ---
 
-## Orchestration: Personas, Skills, and Commands
+## Parallel Execution Rules
 
-Three composable layers — don't confuse their roles:
+### When to Parallelize
+- Tasks in the same dependency layer (no inter-task dependencies).
+- Tasks that modify different files (avoid merge conflicts).
+- Tasks that are conceptually independent (e.g., writing tests for two unrelated
+  modules).
 
-- **Skills** (`skills/<name>/SKILL.md`) — workflows with steps and exit criteria. The *how*. Mandatory when intent matches.
-- **Personas** (`agents/<role>.md`) — roles with a perspective and output format. The *who*.
-- **Commands** (`.opencode/commands/*.md`) — user-facing entry points. The *when*. The orchestration layer.
+### When NOT to Parallelize
+- Tasks that modify the same file (risk of conflicting edits).
+- Tasks where one produces context that another needs.
+- When the effort level is `low` (serial is simpler and avoids coordination overhead).
 
-**Composition rule: the user (or a command) is the orchestrator. Personas do not invoke other personas.** A persona may invoke skills.
-
-The only endorsed multi-persona pattern is **parallel fan-out with a merge step** — used by `/ship` to run `code-reviewer`, `security-auditor`, and `test-engineer` concurrently, then synthesize their reports.
-
-See [agents/README.md](agents/README.md) for the decision matrix and [references/orchestration-patterns.md](references/orchestration-patterns.md) for the full pattern catalog.
-
----
-
-## Creating a New Skill
-
-### Directory Structure
-
-```
-skills/
-  {skill-name}/
-    SKILL.md              # Required: skill definition
-    scripts/              # Include if the skill ships runnable helpers
-      {script-name}.sh
-  {skill-name}.zip        # Packaged for distribution
-```
-
-### Skill Discovery Paths
-
-OpenCode checks all of these on startup:
-
-```
-.opencode/skills/<name>/SKILL.md           # project-local (recommended)
-~/.config/opencode/skills/<name>/SKILL.md  # global
-.agents/skills/<name>/SKILL.md             # agent-compat project-local
-~/.agents/skills/<name>/SKILL.md           # agent-compat global
-```
-
-### Naming Conventions
-
-- **Skill directory**: `kebab-case` (e.g. `web-quality`)
-- **SKILL.md**: always uppercase, always this exact filename
-- **Scripts**: `kebab-case.sh` (e.g., `deploy.sh`, `fetch-logs.sh`)
-- **Zip file**: must match directory name exactly: `{skill-name}.zip`
-
-### SKILL.md Frontmatter
-
-```yaml
----
-name: {skill-name}        # 1–64 chars, lowercase alphanumeric + hyphens
-description: >
-  One sentence describing what the skill does.
-  Use when: <trigger phrases>.
----
-```
-
-Only `name` and `description` are required. `license`, `compatibility`, and `metadata` (string map) are optional.
-
-### SKILL.md Format
-
-```markdown
----
-name: {skill-name}
-description: {One sentence + "Use when" trigger conditions.}
----
-
-# {Skill Title}
-
-{Brief overview of what the skill does and why it matters.}
-
-## How It Works
-
-{Numbered list explaining the workflow.}
-
-## Usage (Optional)
-
-Include only if the skill ships runnable helpers under scripts/.
-
-\`\`\`bash
-bash ~/.config/opencode/skills/{skill-name}/scripts/{script}.sh [args]
-\`\`\`
-
-**Arguments:**
-- `arg1` - Description (defaults to X)
-
-## Output
-
-{Show example output.}
-
-## Present Results to User
-
-{Template for how the agent should format results.}
-
-## Troubleshooting
-
-{Common issues and solutions.}
-```
-
-### Best Practices for Context Efficiency
-
-- **Keep SKILL.md under 500 lines** — move reference material to separate files
-- **Write specific descriptions** — helps the agent know exactly when to activate
-- **Use progressive disclosure** — reference supporting files read only when needed
-- **Prefer scripts over inline code** — execution doesn't consume context (only output does)
-- **File references work one level deep** — link directly from SKILL.md to supporting files
-
-### Script Requirements
-
-```bash
-#!/bin/bash
-set -e
-echo "Running..." >&2           # status → stderr
-echo '{"status": "ok"}'        # machine-readable output → stdout
-trap 'rm -f /tmp/my-tmpfile' EXIT
-```
-
-Reference installed scripts as `~/.config/opencode/skills/{skill-name}/scripts/{script}.sh`.
-
-### Creating the Zip Package
-
-```bash
-cd skills
-zip -r {skill-name}.zip {skill-name}/
-```
-
-### Installation
-
-**Project-local:**
-```bash
-cp -r skills/{skill-name} .opencode/skills/
-```
-
-**Global:**
-```bash
-cp -r skills/{skill-name} ~/.config/opencode/skills/
-```
+### Merging Parallel Outputs
+- Each parallel task produces its own output contract.
+- The planner collects all outputs and merges them in sequence (order defined by
+  `merge_strategy` in execution config).
+- If two tasks produce conflicting changes to the same file, the merge strategy
+  (`diff-merge` or `conflict-resolution`) is applied.
 
 ---
 
-## Rules Precedence (OpenCode)
+## Tool Usage Policy
 
-When OpenCode starts, it resolves instructions in this order:
+### Internet Search
+- Use only when the task requires information not in the model's training data.
+- Always cite sources.
+- Cache results to avoid redundant lookups within a session.
 
-1. Local `AGENTS.md` (walks up from CWD to git root)
-2. Global `~/.config/opencode/AGENTS.md`
-3. Any paths listed in `opencode.json` `instructions` field (merged with the above)
+### Code Execution
+- Run tests, linters, and type-checkers after every change.
+- Use the sandbox for untrusted code execution.
+- Never execute code that modifies system files or environment outside the project.
 
-The first matching file wins per category. Commit your project `AGENTS.md` to Git so the whole team shares it.
+### File Operations
+- Read before you write — understand existing code before modifying it.
+- Prefer small, targeted edits over rewriting entire files.
+- Clean up temporary files after use.
 
 ---
 
-## Zed Agent Panel Notes
+## Quality Gates
 
-In Zed v1.4+:
+Every artifact must pass these gates before being marked complete:
 
-- Always-on project context (this file) is surfaced as **Instructions** in the Agent Panel
-- Reusable, on-demand workflows are **Skills** (`skills/*/SKILL.md`) — these replaced the old Rules Library
-- If you see "Rules" in older Zed UI, map it to **Instructions** for always-on context or **Skills** for on-demand workflows
+1. **Syntax check** — No parse errors in generated code.
+2. **Lint** — No lint errors (follow project lint rules).
+3. **Type check** — No type errors (when type checking is configured).
+4. **Tests pass** — All existing tests still pass.
+5. **Acceptance criteria met** — Each criterion is validated.
+6. **No regressions** — Behavior of unchanged code is preserved.
+
+---
+
+## Error Handling
+
+- If a task fails: document why, roll back partial changes, and report to the
+  planner for re-planning.
+- If a dependency is missing: attempt to resolve it (install package, create file)
+  before reporting failure.
+- If the model refuses to generate certain content: document the refusal reason
+  and suggest an alternative approach.
+- If an external tool or API is unavailable: retry with exponential backoff
+  (3 retries max), then fall back to an alternative approach.
