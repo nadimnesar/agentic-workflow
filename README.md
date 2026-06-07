@@ -1,8 +1,8 @@
 # Agentic Workflow Template
 
 An **OpenCode** workflow template for **Zed Editor** (Agent Panel).
-Pre-optimized for **Java 21, Spring Boot 3, Angular 17, PostgreSQL, AWS,
-Kafka/RabbitMQ** stacks. 28 skills across 6 lifecycle phases.
+28 skills across 6 lifecycle phases. Multi-agent orchestration with
+parallel execution.
 
 ## What This Is
 
@@ -11,9 +11,8 @@ This template provides a structured, extensible agentic system:
 - **Skill-first execution** — 28 well-defined capabilities grouped by phase (Define, Plan, Build, Verify, Review, Ship).
 - **Multi-agent orchestration** — Planner → Builder → Tester → Reviewer pipeline
   that runs autonomously with minimal user interruption.
-- **Tech stack optimized** — All agents, skills, and references default to Java 21 + Spring Boot 3 + Angular 17 + PostgreSQL + AWS + Kafka/RabbitMQ.
-- **Reference checklists** — Curated quick-reference guides for testing (JUnit 5/Mockito/Testcontainers), security (Spring Security/OWASP), and performance (Spring Boot tuning/Angular perf/PostgreSQL queries).
-- **Canonical tech stack** — `references/tech-stack.md` defines default technology preferences so all agents and skills produce consistent, idiomatic code.
+- **Reference checklists** — Curated quick-reference guides for testing, security, and performance.
+- **Adaptable** — Stack defaults live in `references/tech-stack.md`. Edit one file to retarget any technology.
 
 Model and effort selection are handled via the Zed Agent Panel UI (not
 duplicated in config files).
@@ -73,10 +72,10 @@ Open in Zed with the Agent Panel enabled. Make a request like:
 └── ... (no other tool-specific config files)
 
 references/
-├── tech-stack.md                    # Canonical stack: Java 21, Spring Boot 3, Angular 17, AWS
-├── testing-patterns.md              # JUnit 5, Mockito, AssertJ, Testcontainers patterns
-├── security-checklist.md            # Spring Security, OWASP Top 10, AWS infra
-└── performance-checklist.md         # Spring Boot tuning, Angular perf, PostgreSQL queries
+├── tech-stack.md                    # Default technology preferences (edit to retarget)
+├── testing-patterns.md              # Testing patterns and anti-patterns
+├── security-checklist.md            # Security checklist (OWASP, auth, infra)
+└── performance-checklist.md         # Performance optimization patterns
 
 AGENTS.md                            # Core workflow lifecycle and rules
 README.md                            # This file
@@ -127,8 +126,8 @@ is controlled by the agents at runtime.
 To adapt this template for a different stack:
 
 1. Edit `references/tech-stack.md` — replace the language, framework, database, cloud, and messaging preferences.
-2. Update agent examples in `.opencode/agents/` to match your framework conventions.
-3. Customize reference checklists (`references/testing-patterns.md`, `references/security-checklist.md`, `references/performance-checklist.md`) for your ecosystem.
+2. Update agent examples in `.opencode/agents/` to match your stack conventions.
+3. Customize reference checklists for your ecosystem.
 
 All skills and agents reference `tech-stack.md` for default technology decisions.
 
