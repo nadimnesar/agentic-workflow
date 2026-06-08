@@ -1,7 +1,61 @@
 # Agentic Workflow System
 
-This file defines the core agentic workflow lifecycle for this project. All agents
-MUST read and follow these rules when operating.
+This project uses an agentic workflow lifecycle (Route → Plan → Build → Test → Review).
+Coding agents should follow these rules when operating on this project.
+
+---
+
+## Quick Start
+
+```bash
+# This project uses opencode for agentic workflows
+# Install: curl -fsSL https://opencode.ai/install | bash
+```
+
+---
+
+## File Locations
+
+| Component         | Path                             | Scope                                                     |
+| ----------------- | -------------------------------- | --------------------------------------------------------- |
+| Skills (global)   | `~/.agents/skills/`              | Always loaded; 28 skills available                        |
+| Builder agent     | `.opencode/agents/builder.md`    | Project-level agent definition                            |
+| Planner agent     | `.opencode/agents/planner.md`    | Project-level agent definition                            |
+| Researcher agent  | `.opencode/agents/researcher.md` | Project-level agent definition                            |
+| Reviewer agent    | `.opencode/agents/reviewer.md`   | Project-level agent definition                            |
+| Tester agent      | `.opencode/agents/tester.md`     | Project-level agent definition                            |
+| Lifecycle & rules | `AGENTS.md` (this file)          | Project instructions (auto-loaded by Zed, opencode, etc.) |
+
+> **Note:** Skills only live at `~/.agents/skills/` (global). The project `.opencode/skills/` has been removed — do not look for skills there.
+
+---
+
+## Skill Router
+
+The skill router classifies intent and selects the appropriate skill from **`~/.agents/skills/`** (28 skills). Skills are organized as:
+
+```
+~/.agents/skills/
+├── api-and-interface-design/   # SKILL.md + optional scripts/references
+├── code-generation/
+├── testing/
+├── test-driven-development/
+├── refactoring/
+├── code-review-and-quality/
+├── debugging-and-error-recovery/
+├── planning-and-task-breakdown/
+├── security-and-hardening/
+├── frontend-ui-engineering/
+├── ... (28 total)
+```
+
+Each skill folder contains a `SKILL.md` with metadata and instructions.
+
+### Resolution Order
+
+1. Agent checks skill name against `~/.agents/skills/<name>/SKILL.md`
+2. If no match, falls back to researcher agent for context-gathering, then replans
+3. If skill still not found, implement with general best practices
 
 ---
 
@@ -22,171 +76,177 @@ User Request
 │ RESEARCHER  │────▶│   PLANNER    │     │   AGENT      │
 │ AGENT       │     │   (replan)   │     └──────┬───────┘
 └─────────────┘     └──────────────┘            │
-                                                ▼
-                                         ┌──────────────┐
-                                         │  REVIEWER    │
-                                         │  AGENT       │
-                                         └──────┬───────┘
-                                                │
-                                          ┌─────┴─────┐
-                                          │           │
-                                      Approved    Changes
-                                          │      Requested
-                                          ▼           │
-                                     ┌────────┐       │
-                                     │ DONE   │◀──────┘
-                                     └────────┘  (iterate)
+                                                 ▼
+                                          ┌──────────────┐
+                                          │  REVIEWER    │
+                                          │  AGENT       │
+                                          └──────┬───────┘
+                                                 │
+                                           ┌─────┴─────┐
+                                           │           │
+                                       Approved    Changes
+                                           │      Requested
+                                           ▼           │
+                                      ┌────────┐       │
+                                      │ DONE   │◀──────┘
+                                      └────────┘  (iterate)
 ```
 
 ### Phase 1: Route
-The skill router classifies the user's intent and selects the appropriate skill(s).
-If no skill matches sufficiently, it falls back to the researcher agent for context-
-gathering, then replans.
+
+Skill router classifies intent and selects skill from `~/.agents/skills/`. Falls back to researcher + planner if no match.
 
 ### Phase 2: Plan
-The planner decomposes the request into ordered tasks with a dependency graph.
-Each task is assigned a skill and an agent type. Parallelization opportunities are
-identified at this stage.
+
+Planner decomposes into ordered tasks with dependency graph. Identifies parallelization opportunities.
 
 ### Phase 3: Build
-The builder executes each task using the assigned skill. Tasks within the same
-dependency layer run in parallel when `parallel.enabled` is true. Each task
-produces an artifact (code, tests, docs).
+
+Builder executes tasks using the assigned skill. Parallel tasks within same dependency layer run concurrently.
 
 ### Phase 4: Test
-The tester validates each artifact against acceptance criteria. Tests are added
-or updated. Bugs found during testing are reported back to the builder for
-iteration.
+
+Tester validates artifacts against acceptance criteria. Reports bugs back to builder.
 
 ### Phase 5: Review
-The reviewer evaluates all artifacts across correctness, maintainability,
-performance, security, and test quality. If changes are requested, the loop
-returns to the builder.
+
+Reviewer evaluates across correctness, maintainability, performance, security, test quality.
 
 ---
 
 ## Core Principles
 
-### 1. Autonomy
-Agents operate autonomously by default. Do not ask the user for confirmation on
-routine decisions (naming, file placement, library choice within established
-patterns). Escalate to the user only when:
-- The request is ambiguous and cannot be resolved from context.
-- A decision has irreversible consequences (data loss, security, public API breakage).
-- Two equally valid approaches exist and neither is clearly better.
+### Autonomy
 
-### 2. Minimal Interruption
-Batch questions into a single message. Prefer to make a reasonable default choice
-and note it for the user's review rather than blocking on every decision.
+- Operate autonomously by default
+- Escalate only when: ambiguous request, irreversible consequences, equally-valid approaches
+- Batch questions into single messages
 
-### 3. Iterative Refinement
-Each phase may trigger a loop to a previous phase:
-- Tester finds a bug → Builder fixes it → Tester re-verifies.
-- Reviewer requests changes → Builder implements → Reviewer re-reviews.
-- After `max_iterations` (from execution config) without resolution, escalate to
-  the user with a summary of the impasse.
+### Skill-First Execution
 
-### 4. Skill-First Execution
-Each task references a skill. Before executing, load the skill's SKILL.md and
-follow its execution steps precisely. If a task calls for a skill that does not
-exist, fall back to the researcher + planner to define a reasonable approach.
+- Load the assigned skill's `SKILL.md` before executing
+- Follow its instructions precisely
+- If skill doesn't exist, fall back to researcher + planner
+
+### Iterative Refinement
+
+- Tester finds bug → Builder fixes → Tester re-verifies
+- Reviewer requests changes → Builder implements → Reviewer re-reviews
+- After max iterations without resolution, escalate
 
 ---
 
-## Context Management Strategy
+## Convention Adherence
 
-### Context Preservation
-- The original user request is preserved in full throughout the entire lifecycle.
-- Each agent receives only the context slice it needs (the relevant subset of
-  files, requirements, and previous outputs).
-- Architecture decisions and acceptance criteria are carried forward across all
-  phases.
+Before writing code:
 
-### Context Compression
-When approaching the token limit:
-1. Trim low-signal conversation history (back-and-forth that did not change the plan).
-2. Summarize completed tasks into their input/output contracts (discard internal
-   reasoning).
-3. Drop file contents that have been read but not modified.
-4. Preserve: acceptance criteria, architecture decisions, current task scope.
+1. Read 2-3 existing files in the same directory to infer conventions
+2. Match existing: package structure, naming, import ordering, error handling, annotations
+3. Default to conventions used by the majority of the codebase
 
-### Handoff Protocol
-When one agent passes work to another:
-```
-Previous Agent Output (as Input Contract for next agent)
-    │
-    ▼
-Next Agent reads input contract, loads relevant files, executes.
-    │
-    ▼
-Next Agent produces output contract and passes forward.
-```
-Each handoff includes only the information the next agent needs, not the full
-conversation history.
+### Production Quality
+
+- Handle errors gracefully (no silent failures)
+- Add input validation at all public boundaries
+- Log at meaningful levels (debug=details, info=state, error=failures)
+- Use appropriate abstraction — don't over-engineer
+
+### Testing Discipline
+
+- Always produce tests alongside implementation
+- Minimum: happy path + 2 edge cases per function
+- For bugs: regression test that fails before the fix
+- Match existing test patterns (framework, fixtures, assertions)
+
+### Effort Adaptation
+
+- **low**: Minimal implementation, basic error handling, happy-path tests only
+- **medium**: Full error handling, edge cases, standard test coverage
+- **high**: Exhaustive edge cases, property-based tests, performance considerations
 
 ---
 
-## Parallel Execution Rules
+## Context Management
 
-### When to Parallelize
-- Tasks in the same dependency layer (no inter-task dependencies).
-- Tasks that modify different files (avoid merge conflicts).
-- Tasks that are conceptually independent (e.g., writing tests for two unrelated
-  modules).
-
-### When NOT to Parallelize
-- Tasks that modify the same file (risk of conflicting edits).
-- Tasks where one produces context that another needs.
-- When the effort level is `low` (serial is simpler and avoids coordination overhead).
-
-### Merging Parallel Outputs
-- Each parallel task produces its own output contract.
-- The planner collects all outputs and merges them in sequence (order defined by
-  `merge_strategy` in execution config).
-- If two tasks produce conflicting changes to the same file, the merge strategy
-  (`diff-merge` or `conflict-resolution`) is applied.
-
----
-
-## Tool Usage Policy
-
-### Internet Search
-- Use only when the task requires information not in the model's training data.
-- Always cite sources.
-- Cache results to avoid redundant lookups within a session.
-
-### Code Execution
-- Run tests, linters, and type-checkers after every change.
-- Use the sandbox for untrusted code execution.
-- Never execute code that modifies system files or environment outside the project.
-
-### File Operations
-- Read before you write — understand existing code before modifying it.
-- Prefer small, targeted edits over rewriting entire files.
-- Clean up temporary files after use.
+- Preserve original request throughout the entire lifecycle
+- Each agent receives only the context slice it needs
+- Handoff protocol: Input Contract → Execute → Output Contract
+- Each handoff includes only what the next agent needs
 
 ---
 
 ## Quality Gates
 
-Every artifact must pass these gates before being marked complete:
+Every artifact must pass:
 
-1. **Syntax check** — No parse errors in generated code.
-2. **Lint** — No lint errors (follow project lint rules).
-3. **Type check** — No type errors (when type checking is configured).
-4. **Tests pass** — All existing tests still pass.
-5. **Acceptance criteria met** — Each criterion is validated.
-6. **No regressions** — Behavior of unchanged code is preserved.
+1. **Syntax check** — No parse errors
+2. **Lint** — No lint errors
+3. **Type check** — No type errors
+4. **Tests pass** — All existing tests still pass
+5. **Acceptance criteria met** — Each criterion validated
+6. **No regressions** — Preserve behavior of unchanged code
+
+---
+
+## Zed IDE + OpenRouter Configuration
+
+This project is configured for use with [Zed IDE](https://zed.dev/) and [OpenRouter](https://openrouter.ai/).
+
+### OpenRouter Setup (in Zed)
+
+Configure OpenRouter as your model provider through Zed's UI:
+
+1. Open **Agent Settings**: `Cmd+Shift+P` → `agent: open settings`
+2. Go to the **OpenRouter** section
+3. Enter your OpenRouter API key (from https://openrouter.ai/keys)
+4. Select a default model
+
+Or set `OPENROUTER_API_KEY` in your environment.
+
+### Default Model Config
+
+Add to your Zed `settings.json` (`~/.config/zed/settings.json` or `.zed/settings.json`):
+
+```json
+{
+  "agent": {
+    "default_model": {
+      "provider": "openrouter",
+      "model": "openrouter/auto"
+    }
+  }
+}
+```
+
+### Custom Models
+
+```json
+{
+  "language_models": {
+    "open_router": {
+      "api_url": "https://openrouter.ai/api/v1",
+      "available_models": [
+        {
+          "name": "openrouter/auto",
+          "display_name": "Auto Router",
+          "max_tokens": 2000000,
+          "supports_tools": true
+        }
+      ]
+    }
+  }
+}
+```
+
+### Zed Skills Integration
+
+Zed auto-loads skills from `~/.agents/skills/` — same location as the skill router. Skills appear in Zed's Agent Panel via `/` commands and `@skill` mentions. No additional configuration needed.
 
 ---
 
 ## Error Handling
 
-- If a task fails: document why, roll back partial changes, and report to the
-  planner for re-planning.
-- If a dependency is missing: attempt to resolve it (install package, create file)
-  before reporting failure.
-- If the model refuses to generate certain content: document the refusal reason
-  and suggest an alternative approach.
-- If an external tool or API is unavailable: retry with exponential backoff
-  (3 retries max), then fall back to an alternative approach.
+- Task fails → document why, roll back partial changes, report to planner
+- Missing dependency → attempt to resolve (install, create) before reporting
+- Model refuses content → document reason, suggest alternative
+- External tool unavailable → retry with exponential backoff (3 max), then fallback
