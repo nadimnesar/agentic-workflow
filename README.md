@@ -52,7 +52,7 @@ cp -r skills ~/.agents/skills
 export OPENROUTER_API_KEY="sk-or-..."
 ```
 
-The `.zed/settings.json` and `~/.config/opencode/opencode.jsonc` are pre-configured with `zebn/deepseek-v4-flash-free` as the default model.
+The `~/.config/opencode/opencode.jsonc` is pre-configured with `zebn/deepseek-v4-flash-free` as the default model.
 
 ### Step 3: Verify the Agent Panel
 
@@ -81,9 +81,6 @@ Try a request like:
 ├── router/
 │   └── skill-router.md              # Intent-based skill selection and chaining
 └── ... (no project-level skills — using global ~/.agents/skills/)
-
-.zed/
-└── settings.json                    # OpenRouter provider config
 
 references/
 ├── tech-stack.md                    # Default technology preferences (edit to retarget)

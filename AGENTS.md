@@ -219,7 +219,7 @@ Set via `Cmd+Shift+P` → `agent: open settings` → OpenRouter → select model
 }
 ```
 
-The `.zed/settings.json` and `~/.config/opencode/opencode.jsonc` are already configured.
+The `~/.config/opencode/opencode.jsonc` is already configured.
 
 ### Zed Skills Integration
 
