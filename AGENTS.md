@@ -203,40 +203,23 @@ Configure OpenRouter as your model provider through Zed's UI:
 
 Or set `OPENROUTER_API_KEY` in your environment.
 
-### Default Model Config
+### Default Model (Zed)
 
-Add to your Zed `settings.json` (`~/.config/zed/settings.json` or `.zed/settings.json`):
+This project is pre-configured to use `zebn/deepseek-v4-flash-free` via OpenRouter.
+Set via `Cmd+Shift+P` → `agent: open settings` → OpenRouter → select model, or in `settings.json`:
 
 ```json
 {
   "agent": {
     "default_model": {
       "provider": "openrouter",
-      "model": "openrouter/auto"
+      "model": "zebn/deepseek-v4-flash-free"
     }
   }
 }
 ```
 
-### Custom Models
-
-```json
-{
-  "language_models": {
-    "open_router": {
-      "api_url": "https://openrouter.ai/api/v1",
-      "available_models": [
-        {
-          "name": "openrouter/auto",
-          "display_name": "Auto Router",
-          "max_tokens": 2000000,
-          "supports_tools": true
-        }
-      ]
-    }
-  }
-}
-```
+The `.zed/settings.json` and `~/.config/opencode/opencode.jsonc` are already configured.
 
 ### Zed Skills Integration
 

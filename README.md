@@ -1,8 +1,7 @@
 # Agentic Workflow Template
 
 An **OpenCode** workflow template for **Zed Editor** (Agent Panel).
-28 skills across 6 lifecycle phases. Multi-agent orchestration with
-parallel execution.
+28 skills across 6 lifecycle phases. Multi-agent orchestration with parallel execution.
 
 ## What This Is
 
@@ -13,54 +12,66 @@ This template provides a structured, extensible agentic system:
   that runs autonomously with minimal user interruption.
 - **Reference checklists** — Curated quick-reference guides for testing, security, and performance.
 - **Adaptable** — Stack defaults live in `references/tech-stack.md`. Edit one file to retarget any technology.
+- **Zed + OpenRouter ready** — Pre-configured `.zed/settings.json` with OpenRouter as the AI provider.
 
-Model and effort selection are handled via the Zed Agent Panel UI (not
-duplicated in config files).
+---
 
-## Quick Start
+## Setup (Step by Step)
+
+### Prerequisites
+
+- **Zed Editor** (v0.160+) with Agent Panel enabled
+- **OpenRouter** account (free at https://openrouter.ai)
+
+### Step 1: Install the skills globally
+
+Skills live in `~/.agents/skills/` so both Zed and opencode can find them.
+Move the bundled skills there:
 
 ```bash
-# Copy into your project
+mkdir -p ~/.agents
+cp -r skills ~/.agents/skills
 ```
 
-Open in Zed with the Agent Panel enabled. Make a request like:
+> The `skills/` folder contains 28 skills. Once copied, **Zed auto-loads them** from `~/.agents/skills/` — no config needed.
+> You can delete the project `skills/` folder after copying if you don't need it as a reference.
+
+### Step 2: Configure OpenRouter in Zed
+
+**Option A — Via the UI (recommended):**
+
+1. Open Zed
+2. `Cmd+Shift+P` (Mac) / `Ctrl+Shift+P` (Linux) → `agent: open settings`
+3. Go to the **OpenRouter** section
+4. Paste your API key (from https://openrouter.ai/keys)
+5. Select model `zebn/deepseek-v4-flash-free`
+
+**Option B — Via environment variable:**
+
+```bash
+export OPENROUTER_API_KEY="sk-or-..."
+```
+
+The `.zed/settings.json` and `~/.config/opencode/opencode.jsonc` are pre-configured with `zebn/deepseek-v4-flash-free` as the default model.
+
+### Step 3: Verify the Agent Panel
+
+1. Open the Agent Panel (`Cmd+Shift+E` / `Ctrl+Shift+E`)
+2. You should see the project's `AGENTS.md` loaded as instructions
+3. Type `/` in the message editor and check that skills from `~/.agents/skills/` appear
+
+Try a request like:
+
 - "Add a paginated search endpoint to the user API"
 - "Design the architecture for a real-time notification system"
 - "Review the auth module for security issues"
+
+---
 
 ## Repository Structure
 
 ```
 .opencode/
-├── skills/                          # 28 reusable capability definitions
-│   ├── api-and-interface-design/    # API and module boundary contracts
-│   ├── browser-testing-with-devtools/ # Chrome DevTools MCP
-│   ├── ci-cd-and-automation/        # Pipeline automation
-│   ├── code-generation/             # Scaffold modules and boilerplate
-│   ├── code-review-and-quality/     # Multi-axis code review
-│   ├── code-simplification/         # Reduce complexity, preserve behavior
-│   ├── context-engineering/         # Optimize agent context setup
-│   ├── debugging-and-error-recovery/# Root-cause debugging
-│   ├── deprecation-and-migration/   # Sunset old systems safely
-│   ├── documentation-and-adrs/      # ADRs and documentation
-│   ├── doubt-driven-development/    # In-flight adversarial review
-│   ├── frontend-ui-engineering/     # Production-quality UI
-│   ├── git-workflow-and-versioning/ # Commit discipline and branching
-│   ├── idea-refine/                 # Divergent/convergent ideation
-│   ├── incremental-implementation/  # Thin vertical slices
-│   ├── interview-me/                # One-question-at-a-time intent extraction
-│   ├── performance-optimization/    # Measure-first optimization
-│   ├── planning-and-task-breakdown/ # Task decomposition
-│   ├── refactoring/                 # Behavior-preserving restructuring
-│   ├── security-and-hardening/      # OWASP prevention and hardening
-│   ├── security-review/             # Vulnerability analysis and compliance
-│   ├── shipping-and-launch/         # Pre-launch checklist and rollout
-│   ├── source-driven-development/   # Official-doc-verified code
-│   ├── spec-driven-development/     # Spec before code
-│   ├── system-design/               # Architecture and trade-off analysis
-│   ├── test-driven-development/     # Red-green-refactor cycle
-│   ├── testing/                     # Comprehensive test suite generation
-│   └── using-agent-skills/          # Meta-skill: discover and route
 ├── agents/
 │   ├── planner.md                   # Task decomposition and orchestration
 │   ├── builder.md                   # Implementation and coding
@@ -69,7 +80,10 @@ Open in Zed with the Agent Panel enabled. Make a request like:
 │   └── researcher.md                # External knowledge retrieval
 ├── router/
 │   └── skill-router.md              # Intent-based skill selection and chaining
-└── ... (no other tool-specific config files)
+└── ... (no project-level skills — using global ~/.agents/skills/)
+
+.zed/
+└── settings.json                    # OpenRouter provider config
 
 references/
 ├── tech-stack.md                    # Default technology preferences (edit to retarget)
@@ -80,6 +94,19 @@ references/
 AGENTS.md                            # Core workflow lifecycle and rules
 README.md                            # This file
 ```
+
+### Where Skills Live
+
+| Scope                    | Path                        | Loaded by                     |
+| ------------------------ | --------------------------- | ----------------------------- |
+| Global (all projects)    | `~/.agents/skills/`         | Auto-loaded by Zed & opencode |
+| Project-local (optional) | `<project>/.agents/skills/` | Only when trusted             |
+
+Global skills are available in every project. Project-local skills override globals
+when they share the same name. There are **no project-level skills** in this template —
+all 28 skills are installed globally.
+
+---
 
 ## How It Works
 
@@ -121,6 +148,8 @@ This template includes no config files that duplicate Zed UI functionality.
 All other behavior (parallel execution, context management, tool policies)
 is controlled by the agents at runtime.
 
+---
+
 ## Tech Stack Adaptation
 
 To adapt this template for a different stack:
@@ -131,9 +160,14 @@ To adapt this template for a different stack:
 
 All skills and agents reference `tech-stack.md` for default technology decisions.
 
+---
+
 ## Adding New Skills
 
-1. Create `.opencode/skills/<skill-name>/SKILL.md`.
+Skills are **global** (`~/.agents/skills/`) so they're available in every project.
+To add a new skill:
+
+1. Create `~/.agents/skills/<skill-name>/SKILL.md`.
 2. Follow the template format:
 
 ```markdown
@@ -145,37 +179,51 @@ description: One-line description of what this skill does.
 # Skill: <skill-name>
 
 ## Purpose
+
 What this skill does and when to use it.
 
 ## When to Use
+
 Conditions that trigger this skill.
 
 ## Input Format
+
 Structured YAML describing the expected input.
 
 ## Output Format
+
 Structured YAML describing the guaranteed output.
 
 ## Execution Steps
+
 1. Step one
 2. Step two
 
 ## Examples
+
 Realistic scenarios with inputs and outputs.
 ```
 
-3. Add routing in `.opencode/skills/using-agent-skills/SKILL.md` (the meta-skill decision tree) and `.opencode/router/skill-router.md` (the phase-grouped mapping table).
+3. The skill is immediately available in Zed (via `/` and `@skill`) and opencode — no restart needed.
+
+---
 
 ## Extending Agents
 
 Each agent in `.opencode/agents/` can be customized. To add a new agent:
+
 1. Create `.opencode/agents/<agent-name>.md` with input/output contracts and behavior rules.
 2. Update the pipeline in `AGENTS.md` if it should be part of the core flow.
+
+---
 
 ## Requirements
 
 - **Zed Editor** (v0.160+) with Agent Panel enabled
-- **OpenCode** (for OpenCode-native setups)
+- **OpenRouter** account (or another LLM provider supported by Zed)
+- **OpenCode** (optional — for opencode-native workflows)
+
+---
 
 ## License
 
