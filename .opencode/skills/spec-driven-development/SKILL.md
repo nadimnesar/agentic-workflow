@@ -26,7 +26,6 @@ Every spec must follow this structure. No section is optional except "Open Quest
 
 ```markdown
 # Spec: [Feature Name]
-
 **Status:** Draft | Approved | Implemented
 **Author:** [agent/user]
 **Date:** [YYYY-MM-DD]
@@ -43,7 +42,6 @@ Measurable if possible: "currently X% of users fail at step Y."]
 ## 2. Goals
 
 What this spec will achieve:
-
 - [ ] Goal 1 — [measurable outcome]
 - [ ] Goal 2 — [measurable outcome]
 
@@ -52,7 +50,6 @@ What this spec will achieve:
 ## 3. Non-Goals
 
 What is explicitly out of scope (prevents scope creep and sets expectations):
-
 - Not in scope: [X]
 - Not in scope: [Y]
 - Future work: [Z — acknowledge it exists, but not now]
@@ -69,7 +66,6 @@ What changes and what stays the same. No implementation detail yet — that's Pl
 ## 5. Acceptance Criteria
 
 Each criterion must be:
-
 - **Verifiable**: a human or automated test can confirm it
 - **Specific**: no "should work well" or "should be fast"
 - **Behavioral**: describes observable output, not internal implementation
@@ -77,17 +73,14 @@ Each criterion must be:
 Format: `Given [precondition], when [action], then [observable outcome].`
 
 ### Happy Path
-
 - [ ] AC1: Given [context], when [action], then [result].
 - [ ] AC2: Given [context], when [action], then [result].
 
 ### Edge Cases
-
 - [ ] AC3: Given [boundary condition], when [action], then [graceful result].
 - [ ] AC4: Given [invalid input], when [action], then [specific error behavior].
 
 ### Non-Functional
-
 - [ ] AC5: [Operation] completes in under [N]ms for [scale] inputs.
 - [ ] AC6: [Feature] is accessible: keyboard navigable and screen-reader compatible.
 
@@ -96,7 +89,6 @@ Format: `Given [precondition], when [action], then [observable outcome].`
 ## 6. Interface Changes (if any)
 
 List any new or changed public interfaces:
-
 - New route: `POST /api/[resource]` — [description]
 - New component: `<ComponentName props={...}>` — [description]
 - Changed function signature: `oldFn()` → `newFn(arg: Type): ReturnType`
@@ -107,13 +99,11 @@ List any new or changed public interfaces:
 
 Any schema, store, or data structure changes:
 ```
-
 // Before
 type Foo = { ... }
 
 // After  
 type Foo = { ..., newField: string }
-
 ```
 Migration required: yes/no
 

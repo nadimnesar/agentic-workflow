@@ -87,7 +87,7 @@ without changing behavior, measures before optimizing. Uses: `code-simplificatio
 ### Feedback Loops
 
 | Failing gate  | Returns to                                     |
-| ------------- | ---------------------------------------------- |
+|---------------|------------------------------------------------|
 | Define → Plan | `@define` with clarifying questions            |
 | Plan → Build  | `@plan` with scope concerns                    |
 | Build → Test  | `@build` with specific failing criteria        |
@@ -101,24 +101,7 @@ without changing behavior, measures before optimizing. Uses: `code-simplificatio
 ### Prerequisites
 
 - **OpenCode** installed: `curl -fsSL https://opencode.ai/install | bash`
-- An AI provider configured (e.g., OpenRouter, Anthropic, OpenAI)
-
-### Step 1: Configure your provider
-
-```jsonc
-// ~/.config/opencode/opencode.jsonc
-{
-  "$schema": "https://opencode.ai/config.json",
-  "model": "openrouter/your-model",
-  "provider": {
-    "openrouter": {
-      "options": {
-        "apiKey": "sk-or-...",
-      },
-    },
-  },
-}
-```
+- Configure an AI provider (e.g., OpenRouter, Anthropic, OpenAI), by default OpenCode use Zen.
 
 ### Step 2: Verify
 
@@ -178,15 +161,15 @@ opencode
 5. **Core** reviews the task list
 6. **Core** → `@build` → implements one slice at a time
 7. **Core** → `@test` → validates against acceptance criteria
-   - ✅ All clear → `@review` evaluates quality
-   - ❌ Bugs found → `@build` fixes, `@test` re-tests
+    - ✅ All clear → `@review` evaluates quality
+    - ❌ Bugs found → `@build` fixes, `@test` re-tests
 8. **Core** → `@review` → simplifies and optimizes
 9. **Core** delivers the final result with a Delivery Summary
 
 ### Available Subagents
 
 | Agent      | @mention  | Purpose                                                                      |
-| ---------- | --------- | ---------------------------------------------------------------------------- |
+|------------|-----------|------------------------------------------------------------------------------|
 | **Define** | `@define` | Surfaces true requirements, interviews, writes spec with acceptance criteria |
 | **Plan**   | `@plan`   | Decomposes spec into small, independently verifiable task slices             |
 | **Build**  | `@build`  | Implements one thin vertical slice at a time                                 |

@@ -17,7 +17,6 @@ I guide a structured interview to surface the user's true intent before any solu
 ## When to Use Me
 
 Use me at the very start of any non-trivial request where:
-
 - The user has described a solution but not the problem
 - The scope is unclear or potentially unbounded
 - Multiple interpretations of the request are possible
@@ -32,7 +31,6 @@ Do not use me for trivial, well-scoped tasks ("fix this typo", "rename this vari
 Start with the problem, not the solution. Never ask "how do you want it built?"
 
 Questions to choose from (pick the 1–2 most relevant):
-
 - "What specific situation or pain are you trying to fix? Walk me through what happens today."
 - "If this feature didn't exist six months from now, what would go wrong?"
 - "You mentioned [X]. What made you reach for [X] specifically — is there another way you've tried to solve this?"
@@ -56,7 +54,6 @@ Wait for the answer before continuing.
 ### Phase 4: Out of Scope (1 question)
 
 Always ask this — it prevents scope creep:
-
 - "What is explicitly NOT part of this request?"
 
 ## Interview Rules

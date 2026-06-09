@@ -21,14 +21,12 @@ Use me after Define has produced an approved spec with acceptance criteria. I am
 ## What Makes a Good Task
 
 A task is good when:
-
 - **It fits in a session.** An engineer could start and finish it in one focused sitting.
 - **It is vertical.** It delivers end-to-end behavior — not "just the model", not "just the view". The thinnest possible slice through all layers.
 - **It is verifiable.** There is a concrete way to confirm it is done — a test passes, a UI renders, a command outputs the right value.
 - **It is independent.** It does not depend on another task being "almost done."
 
 A task is bad when:
-
 - It says "implement [big thing]" without scoping a specific behavior
 - It is purely horizontal ("write all the database models")
 - Its only acceptance check is "the code compiles"
@@ -60,38 +58,36 @@ Before any other task: what is the smallest end-to-end path through the system t
 **AC covered:** [Which spec AC(s) this satisfies]
 **Files likely affected:** [list — Plan's best guess, Build will adjust]
 **Acceptance check:**
-
-- [ ] [Specific, runnable verification]
-- [ ] [Specific, runnable verification]
-      **Dependencies:** [Slice numbers that must be complete first]
-      **Estimated complexity:** S / M / L
-      **Notes:** [Anything Build needs to know: edge cases, existing patterns to follow, pitfalls]
+  - [ ] [Specific, runnable verification]
+  - [ ] [Specific, runnable verification]
+**Dependencies:** [Slice numbers that must be complete first]
+**Estimated complexity:** S / M / L
+**Notes:** [Anything Build needs to know: edge cases, existing patterns to follow, pitfalls]
 ```
 
 ### Step 5: Risk Register
 
 For every meaningful risk identified during planning:
 
-| Risk                                     | Likelihood | Impact | Mitigation                                   |
-| ---------------------------------------- | ---------- | ------ | -------------------------------------------- |
-| External API might have different schema | Medium     | High   | Verify in Slice 1 before building against it |
-| Migration may require downtime           | Low        | High   | Wrap in feature flag                         |
+| Risk | Likelihood | Impact | Mitigation |
+|------|-----------|--------|------------|
+| External API might have different schema | Medium | High | Verify in Slice 1 before building against it |
+| Migration may require downtime | Low | High | Wrap in feature flag |
 
 ### Step 6: Open Technical Questions
 
 Questions that Build must answer before or during a specific slice:
-
 - [ ] Q1: [Question] — blocks: [Slice N]
 - [ ] Q2: [Question] — blocks: [Slice N]
 
 ## Task Sizing Guide
 
-| Size       | Time       | Characteristics                                                          |
-| ---------- | ---------- | ------------------------------------------------------------------------ |
-| S (Small)  | < 30 min   | Single function, config change, single component                         |
-| M (Medium) | 30–90 min  | Feature slice with 2–3 files, one integration point                      |
-| L (Large)  | 90–180 min | Multiple interacting systems; should be split if possible                |
-| XL         | > 3 hrs    | **Always split.** If you can't split it, the spec needs more definition. |
+| Size | Time | Characteristics |
+|------|------|-----------------|
+| S (Small) | < 30 min | Single function, config change, single component |
+| M (Medium) | 30–90 min | Feature slice with 2–3 files, one integration point |
+| L (Large) | 90–180 min | Multiple interacting systems; should be split if possible |
+| XL | > 3 hrs | **Always split.** If you can't split it, the spec needs more definition. |
 
 ## Anti-Patterns to Avoid
 
@@ -104,7 +100,6 @@ Questions that Build must answer before or during a specific slice:
 
 ```markdown
 # Task Plan: [Feature Name]
-
 **Spec:** [link or summary]
 **Total slices:** N
 **Estimated total:** [sum of estimates]
@@ -118,14 +113,11 @@ Questions that Build must answer before or during a specific slice:
 ---
 
 ## Risk Register
-
 [table]
 
 ## Open Technical Questions
-
 [list]
 
 ## Notes for Build
-
 [anything that doesn't fit in individual slices]
 ```

@@ -19,7 +19,6 @@ I prevent the single most common cause of bugs in AI-assisted code: using APIs, 
 > If you didn't write it, look it up before you use it.
 
 This applies to:
-
 - External library APIs and their parameters
 - Framework lifecycle hooks and their contracts
 - HTTP API endpoints and their request/response shapes
@@ -32,7 +31,6 @@ This applies to:
 ### Step 1: Identify what needs verification
 
 Before writing any code that uses an external dependency, list the specific APIs you plan to use:
-
 ```
 Need to verify:
 - [ ] library.doThing(arg1, arg2) — what are the exact parameter types?
@@ -43,7 +41,6 @@ Need to verify:
 ### Step 2: Find the authoritative source
 
 Priority order (highest to lowest):
-
 1. **Official documentation** for the exact installed version
 2. **Source code** of the library (use `@scout` subagent or read from node_modules/vendor)
 3. **Type definitions** (.d.ts, stubs) — weaker but fast
@@ -51,7 +48,6 @@ Priority order (highest to lowest):
 5. **Recent Stack Overflow / GitHub Issues** — only for edge case confirmation, never for API shape
 
 Never use:
-
 - Your training data memory for API specifics
 - An old blog post
 - A code example without checking the version it was written for
@@ -59,7 +55,6 @@ Never use:
 ### Step 3: Record what you found
 
 Before writing implementation code, write a brief note:
-
 ```
 Verified: library.doThing(input: string, options?: { timeout: number }): Promise<Result>
 Source: https://[docs-url] — version 3.4.2
@@ -70,14 +65,12 @@ Note: `timeout` default is 5000ms, not 0
 ### Step 4: Write code against what you verified
 
 If the verified API differs from what you expected:
-
 - Update your implementation plan
 - Flag the difference to Core if it affects the task estimate or design
 
 ### Step 5: Pin the version assumption
 
 If the behavior is version-specific, note it in the code:
-
 ```typescript
 // Verified against express@4.18.2 — req.body requires express.json() middleware
 // In express@5, this behavior changes (see: link)
@@ -86,7 +79,6 @@ If the behavior is version-specific, note it in the code:
 ## What Counts as "External"
 
 Assume something is external (requires verification) if:
-
 - It's in `package.json`, `requirements.txt`, `go.mod`, `Cargo.toml`, etc.
 - It's a standard library function with locale, timezone, or precision behavior
 - It's a web API (browser APIs can change between major versions)
@@ -95,7 +87,6 @@ Assume something is external (requires verification) if:
 ## When to Use @scout
 
 For deep library source exploration, invoke the `@scout` built-in subagent:
-
 ```
 @scout investigate how [library] handles [specific behavior] in version [X]
 ```
@@ -105,7 +96,6 @@ Scout will clone or inspect the source without modifying your workspace.
 ## Red Flags That Trigger Verification
 
 Immediately stop and verify if you catch yourself:
-
 - "I think the API is..."
 - "It probably returns..."
 - "I've used this before and it was..."
@@ -115,7 +105,6 @@ Immediately stop and verify if you catch yourself:
 ## Output Format
 
 When this skill is active, include a "Sources Verified" section in your slice report:
-
 ```
 Sources verified:
 - [library@version]: [what was verified] — [doc URL or "source"]

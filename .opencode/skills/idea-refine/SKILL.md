@@ -17,7 +17,6 @@ I prevent premature convergence on the first plausible solution. Before committi
 ## When to Use Me
 
 Use me after `interview-me` has established the problem, and before `spec-driven-development` writes the spec. Especially important when:
-
 - The problem has multiple non-obvious solutions
 - Trade-offs exist between simplicity, performance, maintainability, or time-to-build
 - You or the user are attached to a specific solution that hasn't been challenged
@@ -40,7 +39,6 @@ Constraints (soft/preferred): [list]
 Generate at least 3 meaningfully different approaches. "Meaningfully different" means different trade-offs, not just different libraries for the same approach.
 
 For each option:
-
 ```
 ### Option N: [Name]
 **Summary:** [1 sentence — what it does]
@@ -59,13 +57,13 @@ Anti-pattern: Do not generate "Option 1: The correct approach. Option 2: A bad v
 
 Build a comparison table:
 
-| Criterion              | Option 1 | Option 2 | Option 3 |
-| ---------------------- | -------- | -------- | -------- |
-| Meets hard constraints | ✓/✗      | ✓/✗      | ✓/✗      |
-| Simplest to build      | ★★★      | ★★       | ★        |
-| Simplest to maintain   | ...      | ...      | ...      |
-| Performance at scale   | ...      | ...      | ...      |
-| Reversibility          | ...      | ...      | ...      |
+| Criterion | Option 1 | Option 2 | Option 3 |
+|-----------|----------|----------|----------|
+| Meets hard constraints | ✓/✗ | ✓/✗ | ✓/✗ |
+| Simplest to build | ★★★ | ★★ | ★ |
+| Simplest to maintain | ... | ... | ... |
+| Performance at scale | ... | ... | ... |
+| Reversibility | ... | ... | ... |
 
 Immediately eliminate any option that fails a hard constraint.
 
@@ -89,7 +87,7 @@ Pick one option. State why. Be explicit about what you are trading away:
 
 ### Phase 5: Challenge the Choice
 
-Before locking in, ask: _"What would have to be true for this to be the wrong choice?"_
+Before locking in, ask: *"What would have to be true for this to be the wrong choice?"*
 
 Document the answer. If any of those conditions might actually be true, revisit.
 

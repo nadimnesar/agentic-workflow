@@ -35,7 +35,6 @@ Run this checklist for every UI slice before marking it complete.
 ### 2. Accessibility (A11y)
 
 **Keyboard navigation:**
-
 - [ ] All interactive elements are reachable by Tab
 - [ ] Logical tab order (matches visual order, no Tab traps)
 - [ ] Escape closes modals, dropdowns, and popovers
@@ -43,7 +42,6 @@ Run this checklist for every UI slice before marking it complete.
 - [ ] Arrow keys navigate within composite widgets (menus, tabs, sliders)
 
 **Screen reader:**
-
 - [ ] Page landmarks present: `<header>`, `<main>`, `<nav>`, `<footer>`
 - [ ] Dynamic content updates announced: use `aria-live` for status messages
 - [ ] Modal/dialog traps focus inside and restores on close
@@ -51,12 +49,10 @@ Run this checklist for every UI slice before marking it complete.
 - [ ] Loading states announced: `aria-busy`, loading spinner has `role="status"`
 
 **Color and contrast:**
-
 - [ ] Text contrast ratio ≥ 4.5:1 (normal text), ≥ 3:1 (large text)
 - [ ] State (error, success, disabled) communicated by more than color alone
 
 **Motion:**
-
 - [ ] Animations respect `prefers-reduced-motion`
 
 ### 3. Responsive Design
@@ -70,7 +66,6 @@ Run this checklist for every UI slice before marking it complete.
 ### 4. Error and Loading States
 
 Every data-fetching component must implement:
-
 - [ ] **Loading state**: skeleton, spinner, or progressive disclosure — not a blank render
 - [ ] **Error state**: user-readable message, not raw error object; with retry if applicable
 - [ ] **Empty state**: explicit message when list/data is empty — not blank
@@ -86,7 +81,6 @@ Every data-fetching component must implement:
 ### 6. No Console Noise
 
 Before marking the slice complete:
-
 - [ ] No console.error in normal operation
 - [ ] No unhandled promise rejections
 - [ ] No React key warnings or prop-type warnings
@@ -95,25 +89,18 @@ Before marking the slice complete:
 ## Coding Patterns
 
 ### Component structure (React example)
-
 ```tsx
 // 1. Props are typed and documented
 type ButtonProps = {
-  label: string; // visible text AND accessible name
+  label: string;          // visible text AND accessible name
   onClick: () => void;
-  variant?: "primary" | "secondary";
+  variant?: 'primary' | 'secondary';
   disabled?: boolean;
   isLoading?: boolean;
 };
 
 // 2. Accessibility built in, not added later
-export function Button({
-  label,
-  onClick,
-  variant = "primary",
-  disabled,
-  isLoading,
-}: ButtonProps) {
+export function Button({ label, onClick, variant = 'primary', disabled, isLoading }: ButtonProps) {
   return (
     <button
       type="button"
@@ -131,7 +118,6 @@ export function Button({
 ```
 
 ### Form pattern
-
 ```tsx
 // Always: label → input → error message — in that DOM order
 <div>
@@ -142,11 +128,7 @@ export function Button({
     aria-describedby={error ? "email-error" : undefined}
     aria-invalid={!!error}
   />
-  {error && (
-    <span id="email-error" role="alert">
-      {error}
-    </span>
-  )}
+  {error && <span id="email-error" role="alert">{error}</span>}
 </div>
 ```
 
@@ -161,7 +143,6 @@ export function Button({
 ## Verification
 
 Before reporting slice complete, open the UI and:
-
 1. Tab through all interactive elements — confirm reachability and order
 2. Test with screen reader (or axe DevTools) — check for violations
 3. Resize to 320px — check for overflow or usability issues

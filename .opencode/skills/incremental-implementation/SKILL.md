@@ -40,7 +40,6 @@ Never skip to step 4 without completing steps 1–3.
 
 **The walking skeleton first.**
 For the very first slice, implement the end-to-end path in the thinnest possible way:
-
 - Stub responses are fine
 - Hardcoded values are fine temporarily
 - The goal is: the full path works, even if shallowly
@@ -50,7 +49,6 @@ Do not add "while I'm here" improvements. Do not implement the next slice's func
 
 **Verify at every meaningful checkpoint.**
 After each function or component is written:
-
 - Run the relevant test
 - If it fails: fix it now, not later
 - Never move forward with a red test except to write the next test in a TDD cycle
@@ -58,7 +56,6 @@ After each function or component is written:
 ### After Completing a Slice
 
 Before moving to the next slice, confirm:
-
 - [ ] The slice's acceptance check passes
 - [ ] No previously-passing tests are broken
 - [ ] The code is committed (even if on a feature branch)
@@ -80,13 +77,11 @@ Adding a feature that wasn't in the spec because it seems small. Stop. Spec chan
 ## Commit Discipline
 
 Each commit should be:
-
 - A single logical change
 - Green (all tests pass)
 - Describable in one sentence
 
 Commit message format:
-
 ```
 [slice-N] verb: what changed
 
@@ -95,7 +90,6 @@ Commit message format:
 ```
 
 Example:
-
 ```
 [slice-1] feat: add user authentication endpoint
 
@@ -106,7 +100,6 @@ Example:
 ## When to Stop and Escalate
 
 Stop and escalate to Core (do not continue) if:
-
 - The slice is larger than estimated and can't be split further without changing the spec
 - You've discovered the task plan is wrong (wrong order, missing dependency)
 - A test reveals a spec ambiguity — two valid interpretations exist

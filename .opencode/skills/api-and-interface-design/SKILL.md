@@ -12,7 +12,9 @@ metadata:
 
 ## What I Do
 
-I force interface design to happen before implementation. The contract is written first, agreed upon, and then the internals are built to satisfy it. This prevents the most expensive kind of rework: refactoring a correct implementation because the interface was wrong.
+I force interface design to happen before implementation. The contract is written first, agreed upon, and then the
+internals are built to satisfy it. This prevents the most expensive kind of rework: refactoring a correct implementation
+because the interface was wrong.
 
 ## When to Use Me
 
@@ -147,7 +149,7 @@ Status code contract:
 Before finalizing an interface, ask: "How painful would a breaking change be?"
 
 | Stability Level | Used by                 | Change policy                    |
-| --------------- | ----------------------- | -------------------------------- |
+|-----------------|-------------------------|----------------------------------|
 | Internal        | 1 file                  | Change freely                    |
 | Module          | 1 module/package        | Coordinate within the module     |
 | Service         | Multiple services/teams | Deprecate before remove; version |

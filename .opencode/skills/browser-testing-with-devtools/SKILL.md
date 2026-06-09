@@ -23,7 +23,6 @@ Use me for every UI slice after unit/integration tests pass. I am a complement t
 ### Step 1: Open with DevTools connected
 
 If the Chrome DevTools MCP server is available, connect to the running app:
-
 ```
 - Open the app at its local dev URL
 - Open DevTools (F12 / Cmd+Option+I)
@@ -33,13 +32,11 @@ If the Chrome DevTools MCP server is available, connect to the running app:
 ### Step 2: Console audit
 
 Before interacting with anything:
-
 - [ ] No errors in the console at initial load
 - [ ] No warnings about missing required props, invalid prop types, or key issues (React)
 - [ ] No deprecation warnings from libraries you're using
 
 After each interaction:
-
 - [ ] No new errors appear in the console
 - [ ] Network requests succeed (no failed fetches shown as errors)
 
@@ -48,7 +45,6 @@ After each interaction:
 ### Step 3: Network panel
 
 For components that fetch data:
-
 - [ ] Expected network requests are made (check URL, method, headers)
 - [ ] No unexpected extra requests (N+1 is visible here as multiple identical requests)
 - [ ] Responses have expected status codes
@@ -56,20 +52,17 @@ For components that fetch data:
 - [ ] Auth tokens are in headers — not in URLs (URLs get logged)
 
 Test the error state:
-
 - Use the Network panel to throttle or block a request
 - Confirm the UI shows a useful error state (not a blank screen or raw JSON)
 
 ### Step 4: Accessibility audit (axe)
 
 Run the axe accessibility checker (DevTools > Lighthouse, or axe DevTools extension):
-
 - [ ] No critical violations
 - [ ] No serious violations
 - [ ] Review moderate violations — not all are worth fixing, but document them
 
 Common violations to catch:
-
 - Buttons without accessible names
 - Images without alt text
 - Form inputs without labels
@@ -80,13 +73,11 @@ Common violations to catch:
 ### Step 5: Viewport testing
 
 Test at three widths minimum:
-
 - **320px** (small mobile — this breaks most layouts that weren't designed mobile-first)
 - **768px** (tablet — often neglected)
 - **1280px** (standard desktop)
 
 Check:
-
 - [ ] No horizontal scroll at any viewport
 - [ ] Content remains readable (no overflow, no text truncation that hides meaning)
 - [ ] Interactive elements remain usable (touch targets large enough on mobile)
@@ -97,7 +88,6 @@ Use DevTools Device Toolbar (Cmd+Shift+M) to quickly toggle viewports.
 ### Step 6: Keyboard navigation test
 
 Tab through the component with mouse disconnected:
-
 - [ ] All interactive elements reachable
 - [ ] Focus indicator visible at every step
 - [ ] Logical tab order (matches reading/visual order)
@@ -108,14 +98,12 @@ Tab through the component with mouse disconnected:
 ### Step 7: Performance sanity check
 
 For components that render lists, load heavy data, or have complex interactions:
-
 - Open DevTools > Performance
 - Record a representative interaction
 - Check: no jank (frame drops below 60fps during animation/scroll)
 - Check: no long tasks > 50ms blocking the main thread on interaction
 
 For React apps:
-
 - Install React DevTools
 - Use Profiler to confirm no unnecessary re-renders on stable props
 - Check: components that should be memoized are memoized
@@ -129,12 +117,11 @@ Console: ✓ clean / ✗ issues: [list]
 Network: ✓ clean / ✗ issues: [list]
 Accessibility (axe): ✓ no violations / ✗ violations: [list]
 Responsive:
-
-- 320px: ✓ / ✗ [issue]
-- 768px: ✓ / ✗ [issue]
-- 1280px: ✓ / ✗ [issue]
-  Keyboard nav: ✓ / ✗ [issue]
-  Performance: ✓ no issues / ✗ [issue]
+  - 320px: ✓ / ✗ [issue]
+  - 768px: ✓ / ✗ [issue]
+  - 1280px: ✓ / ✗ [issue]
+Keyboard nav: ✓ / ✗ [issue]
+Performance: ✓ no issues / ✗ [issue]
 
 Action items: [list any issues found, with severity]
 ```
@@ -142,7 +129,6 @@ Action items: [list any issues found, with severity]
 ## When DevTools MCP Is Not Available
 
 If the browser MCP is not connected, perform these checks manually:
-
 1. Run `npx axe [URL]` from CLI if available
 2. Run Lighthouse in the browser
 3. Manually test keyboard navigation

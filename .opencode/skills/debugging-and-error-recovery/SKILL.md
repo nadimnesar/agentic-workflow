@@ -35,13 +35,11 @@ A failure you can't reproduce reliably cannot be fixed reliably.
 3. Confirm it fails on a clean state (not just in a dirty test environment)
 
 **If the failure is intermittent:**
-
 - Do not proceed — find what makes it intermittent first
 - Common causes: timing dependencies, test ordering, shared mutable state, randomness
 - Fix the flakiness before fixing the underlying bug
 
 **If you can't reproduce:**
-
 - Check if the test was already failing before your changes (`git stash`, run again)
 - Check if it only fails in CI (environment differences, missing env vars, different Node version)
 - Document "could not reproduce locally" and escalate to Core
@@ -55,9 +53,7 @@ A failure you can't reproduce reliably cannot be fixed reliably.
 Work from the symptom inward. Never start from a hypothesis about the cause.
 
 ### The Bisection Method
-
 Start at the error message and work backward:
-
 1. Read the full error, stack trace, and test name — understand what failed, not what you think failed
 2. Find the earliest point in the call stack you own
 3. Add a log or breakpoint at that point — confirm the inputs are what you expect
@@ -66,15 +62,12 @@ Start at the error message and work backward:
 6. Repeat until you've isolated the exact line
 
 ### State of the World
-
 Before looking at code, understand the state:
-
 - What data is the test providing as input?
 - What is the actual output vs expected output?
 - What state changes happened before this call?
 
 ### Use the tools
-
 - `console.log` or debugger statements at narrow checkpoints (remove them after)
 - Git blame: when was this line last changed?
 - Git log: what changed recently in this file?
@@ -89,19 +82,16 @@ Before looking at code, understand the state:
 Once you know the root cause (not the symptom), apply the smallest fix that corrects it.
 
 ### What "minimal" means
-
 - If the bug is a missing null check: add the null check at the right layer (caller? callee? both?)
 - If the bug is wrong logic: fix the logic — don't work around it with a special case
 - If the bug is a misunderstood API: fix the usage — update the call to match the actual API
 
 ### What it does NOT mean
-
 - "Minimal" does not mean "hack the test to pass"
 - "Minimal" does not mean "suppress the error message"
 - "Minimal" does not mean "add a try/catch that swallows the exception"
 
 ### Before applying the fix
-
 - Confirm that your understanding of the root cause predicts the failure
   - "If X is the cause, then changing Y should make the test pass AND Z test should still pass"
 - Apply the fix
@@ -109,9 +99,7 @@ Once you know the root cause (not the symptom), apply the smallest fix that corr
 - Run the full test suite: confirm nothing else broke
 
 ### If the fix is complex
-
 If the fix touches more than 2–3 files or changes more than a single logical thing:
-
 - Stop
 - Break it into smaller steps
 - Each step should keep the suite green
@@ -124,16 +112,14 @@ If the fix touches more than 2–3 files or changes more than a single logical t
 
 A bug that was fixed without a regression test is a bug that will return.
 
-After every fix, ask: _"What test, if it had existed, would have caught this before it reached me?"_
+After every fix, ask: *"What test, if it had existed, would have caught this before it reached me?"*
 
 Write that test. It should:
-
 - Reproduce the exact failing condition (same input, same state)
 - Assert the correct behavior (not just "doesn't throw")
 - Be named to describe the bug: "does not return null when cache is empty"
 
 If a test already existed and didn't catch this:
-
 - Understand why (was the assertion too weak? was the case not covered?)
 - Strengthen the existing test, or add a new one
 - A test that doesn't catch the bug it was written for is not a guard
@@ -143,29 +129,24 @@ If a test already existed and didn't catch this:
 ## Error Message Reading Guide
 
 **Null / undefined errors:**
-
 - The call stack tells you where the access happened
 - The fix is upstream: find where null enters and handle or reject it there
 
 **Type errors at runtime (in JS/TS):**
-
 - Find where the type contract is broken (caller or callee)
 - Fix at the source; don't cast to `any`
 
 **Async/Promise rejection unhandled:**
-
 - Find the promise that threw — it's in the stack trace
 - Add proper error handling; don't silence with `catch(() => {})`
 
 **Test assertion failures:**
-
 - Read "expected: X, received: Y" carefully
 - Is Y a completely wrong value? (wrong logic)
 - Is Y "undefined"? (function not returning correctly, or test setup incomplete)
 - Is Y an object reference mismatch? (deep equality vs. reference equality)
 
 **Timeout failures:**
-
 - The async operation didn't complete — find why (network, infinite loop, missing resolve/reject)
 - Use `await` correctly; check that your async test is properly `await`-ing
 

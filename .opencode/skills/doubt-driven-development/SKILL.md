@@ -17,7 +17,6 @@ I force a deliberate pause before committing to any non-trivial decision. I ask 
 ## When to Activate Me
 
 Activate this skill for **every** decision that is:
-
 - **Architectural**: choosing between patterns, structures, or system boundaries
 - **Algorithmic**: picking a data structure, sort strategy, or traversal approach
 - **Security-relevant**: authentication, authorization, input validation, secrets, file paths
@@ -32,17 +31,15 @@ Skip for: variable names, file organization preferences, trivial function compos
 ### Step 1: State the decision clearly
 
 Write it out in one sentence before challenging it:
-
 ```
 Decision: I will use [X] to solve [problem] because [initial reason].
 ```
 
 ### Step 2: Generate the adversarial case
 
-Ask with a fresh perspective: _"What is the best argument against this decision?"_
+Ask with a fresh perspective: *"What is the best argument against this decision?"*
 
 Think from the perspective of:
-
 - **The maintainer 6 months from now** — will they understand why?
 - **The adversarial user** — can this be abused or broken?
 - **The load test** — does this hold under 10× expected volume?
@@ -50,7 +47,6 @@ Think from the perspective of:
 - **The refactoring engineer** — is this locked in, or can it change?
 
 Write at least 2 concrete objections:
-
 ```
 Objection 1: [specific problem this decision creates]
 Objection 2: [specific failure mode or maintenance burden]
@@ -59,7 +55,6 @@ Objection 2: [specific failure mode or maintenance burden]
 ### Step 3: Evaluate the objections honestly
 
 For each objection:
-
 - Is it a real risk in this context, or theoretical?
 - Does it disqualify the approach, or is it mitigatable?
 - What would the mitigation cost?
@@ -67,7 +62,6 @@ For each objection:
 ### Step 4: Decide or pivot
 
 **If objections are manageable:**
-
 ```
 Decision confirmed: [X]
 Mitigations:
@@ -76,14 +70,12 @@ Mitigations:
 ```
 
 **If an objection is disqualifying:**
-
 ```
 Decision revised: [X] → [X']
 Reason: [The objection that changed the decision]
 ```
 
 **If you can't resolve an objection:**
-
 ```
 Escalate to Core: [decision + unresolved objection]
 ```
@@ -111,7 +103,6 @@ For async/concurrent code:
 ## Output Format
 
 Include a "Decisions" section in the slice report:
-
 ```
 ## Decisions Made
 
