@@ -1,18 +1,43 @@
-# Agentic Workflow Template
+# Agentic Workflow System
 
-An **OpenCode** workflow template for **Zed Editor** (Agent Panel).
-28 skills across 6 lifecycle phases. Multi-agent orchestration with parallel execution.
+This project uses a **Core-driven orchestration model**: a single primary agent (Core)
+manages all work by coordinating specialized subagents (Definer, Planner, Builder, Tester, Reviewer).
+
+Full architecture documentation: `docs/ARCHITECTURE.md`
+OpenCode agent reference: `docs/primary-agent-reference.md`
+
+---
 
 ## What This Is
 
-This template provides a structured, extensible agentic system:
+This template provides a structured, extensible agentic system for **OpenCode**:
 
-- **Skill-first execution** — 28 well-defined capabilities grouped by phase (Define, Plan, Build, Verify, Review, Ship).
-- **Multi-agent orchestration** — Planner → Builder → Tester → Reviewer pipeline
-  that runs autonomously with minimal user interruption.
-- **Reference checklists** — Curated quick-reference guides for testing, security, and performance.
-- **Adaptable** — Stack defaults live in `references/tech-stack.md`. Edit one file to retarget any technology.
-- **Zed + OpenRouter ready** — Pre-configured `.zed/settings.json` with OpenRouter as the AI provider.
+- **Core orchestration** — One primary agent manages the entire workflow.
+- **Specialized subagents** — Definer (intent & spec), Planner (decomposition), Builder (implementation), Tester (validation), Reviewer (code review).
+- **Skill-first execution** — 28 well-defined capabilities across 6 lifecycle phases.
+- **Documented workflow** — Plans and test results are persisted to `docs/agentic/` for traceability.
+- **Adaptable** — Stack defaults live in `references/tech-stack.md`.
+
+---
+
+## Architecture Overview
+
+```
+User Request
+    │
+    ▼
+┌──────────────────────────────────────────────────────────────┐
+│                      CORE                                     │
+│  1. Understand the task                                       │
+│  2. @definer → writes docs/agentic/definer.md                 │
+│  3. @planner → writes docs/agentic/planner.md                 │
+│  4. @builder → implements according to plan                   │
+│  5. @tester → writes docs/agentic/tester.md                   │
+│  6. @reviewer → evaluates code quality                        │
+│  7. Iterate if bugs or changes needed                         │
+│  8. Deliver final result                                      │
+└──────────────────────────────────────────────────────────────┘
+```
 
 ---
 
@@ -20,208 +45,140 @@ This template provides a structured, extensible agentic system:
 
 ### Prerequisites
 
-- **Zed Editor** (v0.160+) with Agent Panel enabled
-- **OpenRouter** account (free at https://openrouter.ai)
+- **OpenCode** installed: `curl -fsSL https://opencode.ai/install | bash`
+- An AI provider configured (e.g., OpenRouter, Anthropic, OpenAI)
 
 ### Step 1: Install the skills globally
-
-Skills live in `~/.agents/skills/` so both Zed and opencode can find them.
-Move the bundled skills there:
 
 ```bash
 mkdir -p ~/.agents
 cp -r skills ~/.agents/skills
 ```
 
-> The `skills/` folder contains 28 skills. Once copied, **Zed auto-loads them** from `~/.agents/skills/` — no config needed.
-> You can delete the project `skills/` folder after copying if you don't need it as a reference.
+### Step 2: Configure your provider in `~/.config/opencode/opencode.jsonc`
 
-### Step 2: Configure OpenRouter in Zed
-
-**Option A — Via the UI (recommended):**
-
-1. Open Zed
-2. `Cmd+Shift+P` (Mac) / `Ctrl+Shift+P` (Linux) → `agent: open settings`
-3. Go to the **OpenRouter** section
-4. Paste your API key (from https://openrouter.ai/keys)
-5. Select model `zebn/deepseek-v4-flash-free`
-
-**Option B — Via environment variable:**
-
-```bash
-export OPENROUTER_API_KEY="sk-or-..."
+```jsonc
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "openrouter/your-model",
+  "provider": {
+    "openrouter": {
+      "options": {
+        "apiKey": "sk-or-..."
+      }
+    }
+  }
+}
 ```
 
-The `~/.config/opencode/opencode.jsonc` is pre-configured with `zebn/deepseek-v4-flash-free` as the default model.
+### Step 3: Verify
 
-### Step 3: Verify the Agent Panel
-
-1. Open the Agent Panel (`Cmd+Shift+E` / `Ctrl+Shift+E`)
-2. You should see the project's `AGENTS.md` loaded as instructions
-3. Type `/` in the message editor and check that skills from `~/.agents/skills/` appear
-
-Try a request like:
-
-- "Add a paginated search endpoint to the user API"
-- "Design the architecture for a real-time notification system"
-- "Review the auth module for security issues"
+1. Run `opencode` in this project directory.
+2. The **Core** agent is the default primary agent.
+3. Type `@` to see available subagents (definer, planner, builder, tester, reviewer).
 
 ---
 
 ## Repository Structure
 
 ```
+AGENTS.md                            # Core workflow lifecycle and rules
+
 .opencode/
 ├── agents/
-│   ├── planner.md                   # Task decomposition and orchestration
-│   ├── builder.md                   # Implementation and coding
-│   ├── tester.md                    # Validation and test generation
-│   ├── reviewer.md                  # Code review and quality assurance
-│   └── researcher.md                # External knowledge retrieval
-├── router/
-│   └── skill-router.md              # Intent-based skill selection and chaining
-└── ... (no project-level skills — using global ~/.agents/skills/)
+│   ├── core.md                      # Primary agent: orchestrator
+│   ├── definer.md                   # Subagent: intent extraction & spec
+│   ├── planner.md                   # Subagent: task decomposition
+│   ├── builder.md                   # Subagent: implementation
+│   ├── tester.md                    # Subagent: test validation
+│   └── reviewer.md                  # Subagent: code review
+└── router/
+    └── skill-router.md              # Intent-based skill selection
+
+docs/
+├── ARCHITECTURE.md                  # Full system design
+├── primary-agent-reference.md       # Orchestrator design notes
+└── agentic/
+    ├── definer.md                   # Spec output (written by @definer)
+    ├── planner.md                   # Plan output (written by @planner)
+    └── tester.md                    # Test results (written by @tester)
+
+skills/                              # 28 skills (copy to ~/.agents/skills/)
+├── api-and-interface-design/
+├── code-generation/
+├── testing/
+└── ... (28 total)
 
 references/
-├── tech-stack.md                    # Default technology preferences (edit to retarget)
+├── tech-stack.md                    # Default technology preferences
 ├── testing-patterns.md              # Testing patterns and anti-patterns
-├── security-checklist.md            # Security checklist (OWASP, auth, infra)
+├── security-checklist.md            # Security checklist
 └── performance-checklist.md         # Performance optimization patterns
-
-AGENTS.md                            # Core workflow lifecycle and rules
-README.md                            # This file
 ```
-
-### Where Skills Live
-
-| Scope                    | Path                        | Loaded by                     |
-| ------------------------ | --------------------------- | ----------------------------- |
-| Global (all projects)    | `~/.agents/skills/`         | Auto-loaded by Zed & opencode |
-| Project-local (optional) | `<project>/.agents/skills/` | Only when trusted             |
-
-Global skills are available in every project. Project-local skills override globals
-when they share the same name. There are **no project-level skills** in this template —
-all 28 skills are installed globally.
 
 ---
 
-## How It Works
+## How to Use
 
-```
-                          ┌──────────────────────────────────────────┐
-                          │  Skill Router                            │
-                          │  (intent → phase → skill)                │
-                          │  ┌──────┐ ┌────┐ ┌─────┐ ┌──────┐ ┌───┐ │
-                          │  │Define│ │Plan│ │Build│ │Verify│ │...│ │
-                          │  └──────┘ └────┘ └─────┘ └──────┘ └───┘ │
-                          └────────────────┬─────────────────────────┘
-                                           │
-                    ┌──────────────────────▼──────────────────────┐
-                    │              Planner Agent                   │
-                    │  (dependency graph → parallel groups)       │
-                    └──────────────────────┬──────────────────────┘
-                                           │
-                    ┌──────────────────────▼──────────────────────┐
-                    │              Builder Agent                   │
-                    │  (skill-first execution, 28 skills)         │
-                    └──────────────────────┬──────────────────────┘
-                                           │
-                    ┌──────────────────────▼──────────────────────┐
-                    │              Tester Agent                   │
-                    │  (validation, edge cases, regression)       │
-                    └──────────────────────┬──────────────────────┘
-                                           │
-                    ┌──────────────────────▼──────────────────────┐
-                    │             Reviewer Agent                  │
-                    │  (6-axis quality scoring)                   │
-                    └──────────────────────┬──────────────────────┘
-                                           │
-                                           ▼
-                                       Done
+The **Core** agent is the only agent you interact with directly. It manages everything:
+
+```bash
+opencode
+# Then simply describe what you want:
+# "Add a paginated search endpoint to the UserController"
 ```
 
-Model and effort level are selected in the **Zed Agent Panel UI**.
-This template includes no config files that duplicate Zed UI functionality.
-All other behavior (parallel execution, context management, tool policies)
-is controlled by the agents at runtime.
+### What happens:
+
+1. **Core** understands your request
+2. **Core** → **@definer** → extracts intent, refines ideas, writes spec to `docs/agentic/definer.md`
+3. **Core** reads the spec
+4. **Core** → **@planner** → writes plan to `docs/agentic/planner.md`
+5. **Core** reads the plan
+6. **Core** → **@builder** → implements code and tests
+7. **Core** → **@tester** → validates, writes results to `docs/agentic/tester.md`
+8. **Core** reads the results
+   - ✅ All clear → **@reviewer** evaluates quality
+   - ❌ Bugs found → Builder fixes, Tester re-tests
+9. **Core** delivers the final result to you
+
+### Available Subagents
+
+| Agent | @mention | Purpose |
+|-------|----------|---------|
+| **Definer** | `@definer` | Extracts intent, refines ideas, writes spec to `docs/agentic/definer.md` |
+| **Planner** | `@planner` | Decomposes tasks, writes to `docs/agentic/planner.md` |
+| **Builder** | `@builder` | Implements according to plan |
+| **Tester** | `@tester` | Validates, writes to `docs/agentic/tester.md` |
+| **Reviewer** | `@reviewer` | Read-only code quality evaluation |
 
 ---
 
 ## Tech Stack Adaptation
 
-To adapt this template for a different stack:
-
-1. Edit `references/tech-stack.md` — replace the language, framework, database, cloud, and messaging preferences.
-2. Update agent examples in `.opencode/agents/` to match your stack conventions.
-3. Customize reference checklists for your ecosystem.
-
-All skills and agents reference `tech-stack.md` for default technology decisions.
+Edit `references/tech-stack.md` to retarget for any technology stack.
 
 ---
 
-## Adding New Skills
+## Adding New Subagents
 
-Skills are **global** (`~/.agents/skills/`) so they're available in every project.
-To add a new skill:
-
-1. Create `~/.agents/skills/<skill-name>/SKILL.md`.
-2. Follow the template format:
+Create `.opencode/agents/<agent-name>.md` with YAML frontmatter:
 
 ```markdown
 ---
-name: <skill-name>
-description: One-line description of what this skill does.
+description: What this agent does
+mode: subagent
+permission:
+  read: allow
+  edit: deny
 ---
-
-# Skill: <skill-name>
-
-## Purpose
-
-What this skill does and when to use it.
-
-## When to Use
-
-Conditions that trigger this skill.
-
-## Input Format
-
-Structured YAML describing the expected input.
-
-## Output Format
-
-Structured YAML describing the guaranteed output.
-
-## Execution Steps
-
-1. Step one
-2. Step two
-
-## Examples
-
-Realistic scenarios with inputs and outputs.
+System prompt instructions here...
 ```
 
-3. The skill is immediately available in Zed (via `/` and `@skill`) and opencode — no restart needed.
-
----
-
-## Extending Agents
-
-Each agent in `.opencode/agents/` can be customized. To add a new agent:
-
-1. Create `.opencode/agents/<agent-name>.md` with input/output contracts and behavior rules.
-2. Update the pipeline in `AGENTS.md` if it should be part of the core flow.
-
----
-
-## Requirements
-
-- **Zed Editor** (v0.160+) with Agent Panel enabled
-- **OpenRouter** account (or another LLM provider supported by Zed)
-- **OpenCode** (optional — for opencode-native workflows)
+Immediately available via `@<agent-name>` — no restart needed.
 
 ---
 
 ## License
 
-MIT — Use freely in any project, personal or commercial.
+MIT
