@@ -1,10 +1,8 @@
 # Agentic Workflow System
 
 This project uses a **Core-driven orchestration model**: a single primary agent (Core)
-manages all work by coordinating specialized subagents (Definer, Planner, Builder, Tester, Reviewer).
-
-Full architecture documentation: `docs/ARCHITECTURE.md`
-OpenCode agent reference: `docs/primary-agent-reference.md`
+manages all work by coordinating five specialized subagents — **Define**, **Plan**,
+**Build**, **Test**, and **Review**.
 
 ---
 
@@ -12,32 +10,89 @@ OpenCode agent reference: `docs/primary-agent-reference.md`
 
 This template provides a structured, extensible agentic system for **OpenCode**:
 
-- **Core orchestration** — One primary agent manages the entire workflow.
-- **Specialized subagents** — Definer (intent & spec), Planner (decomposition), Builder (implementation), Tester (validation), Reviewer (code review).
-- **Skill-first execution** — 28 well-defined capabilities across 6 lifecycle phases.
-- **Documented workflow** — Plans and test results are persisted to `docs/agentic/` for traceability.
-- **Adaptable** — Stack defaults live in `references/tech-stack.md`.
+- **Core orchestration** — One primary agent manages the entire software delivery lifecycle.
+- **Specialized subagents** — `@define` (intent & spec), `@plan` (task decomposition),
+  `@build` (implementation), `@test` (validation), `@review` (code review).
+- **Quality gates** — Every stage has a gate that must be passed before advancing.
+  No code moves forward with failing tests, unclear requirements, or unchecked complexity.
+- **Feedback loops** — If any stage fails its gate, work flows back to the appropriate
+  previous stage, not forward.
+- **15 curated skills** — Each subagent loads only the skills relevant to its stage,
+  keeping context windows lean and focused.
 
 ---
 
-## Architecture Overview
+## The Pipeline
 
 ```
 User Request
-    │
-    ▼
-┌──────────────────────────────────────────────────────────────┐
-│                      CORE                                     │
-│  1. Understand the task                                       │
-│  2. @definer → writes docs/agentic/definer.md                 │
-│  3. @planner → writes docs/agentic/planner.md                 │
-│  4. @builder → implements according to plan                   │
-│  5. @tester → writes docs/agentic/tester.md                   │
-│  6. @reviewer → evaluates code quality                        │
-│  7. Iterate if bugs or changes needed                         │
-│  8. Deliver final result                                      │
-└──────────────────────────────────────────────────────────────┘
+     │
+     ▼
+┌─────────┐    ┌─────────┐    ┌─────────┐    ┌─────────┐    ┌──────────┐
+│ @define │ -> │  @plan  │ -> │ @build  │ -> │  @test  │ -> │ @review  │
+└─────────┘    └─────────┘    └─────────┘    └─────────┘    └──────────┘
+  Surface         Tasks         Implement       Verify         Simplify &
+  true need       & scope       in slices       & debug        Optimize
 ```
+
+### Stage 0 — Triage
+
+Core assesses the request:
+
+- **Trivial** (typo fix, rename, config tweak) → delegate directly to `@build`.
+- **Non-trivial** (new feature, architecture change, complex bug) → run the full pipeline.
+- **Ambiguous** → always start with `@define`.
+
+### Stage 1 — Define
+
+`@define` interviews the user, refines the idea, and produces a written spec
+with acceptance criteria. Uses: `interview-me`, `idea-refine`, `spec-driven-development`.
+
+**Gate:** No code is planned until the spec is approved.
+
+### Stage 2 — Plan
+
+`@plan` decomposes the spec into small, independently verifiable tasks ordered
+for maximum parallelism and minimum risk. Uses: `planning-and-task-breakdown`.
+
+**Gate:** No code is written until every task is a thin vertical slice.
+
+### Stage 3 — Build
+
+`@build` implements one slice at a time using thin vertical slices, verifying
+against official docs and applying adversarial review to every non-trivial decision.
+Uses: `incremental-implementation`, `source-driven-development`,
+`doubt-driven-development`, `context-engineering`, `frontend-ui-engineering`,
+`api-and-interface-design`.
+
+**Gate:** Each slice must be functionally complete before the next begins.
+
+### Stage 4 — Test
+
+`@test` writes failing tests first, then verifies they pass. Uses browser DevTools
+for runtime UI verification. Applies a structured reproduce→localize→fix→guard
+protocol for bugs. Uses: `test-driven-development`, `browser-testing-with-devtools`,
+`debugging-and-error-recovery`.
+
+**Gate:** All acceptance criteria must pass. Regressions are blockers.
+
+### Stage 5 — Review
+
+`@review` evaluates simplicity and performance — removes unnecessary complexity
+without changing behavior, measures before optimizing. Uses: `code-simplification`,
+`performance-optimization`.
+
+**Gate:** No unnecessary complexity, no unguarded performance regressions.
+
+### Feedback Loops
+
+| Failing gate  | Returns to                                     |
+| ------------- | ---------------------------------------------- |
+| Define → Plan | `@define` with clarifying questions            |
+| Plan → Build  | `@plan` with scope concerns                    |
+| Build → Test  | `@build` with specific failing criteria        |
+| Test → Review | `@test` — do not review broken code            |
+| Review → Done | Apply suggestions, re-test if behavior changes |
 
 ---
 
@@ -48,72 +103,58 @@ User Request
 - **OpenCode** installed: `curl -fsSL https://opencode.ai/install | bash`
 - An AI provider configured (e.g., OpenRouter, Anthropic, OpenAI)
 
-### Step 1: Install the skills globally
-
-```bash
-mkdir -p ~/.agents
-cp -r skills ~/.agents/skills
-```
-
-### Step 2: Configure your provider in `~/.config/opencode/opencode.jsonc`
+### Step 1: Configure your provider
 
 ```jsonc
+// ~/.config/opencode/opencode.jsonc
 {
   "$schema": "https://opencode.ai/config.json",
   "model": "openrouter/your-model",
   "provider": {
     "openrouter": {
       "options": {
-        "apiKey": "sk-or-..."
-      }
-    }
-  }
+        "apiKey": "sk-or-...",
+      },
+    },
+  },
 }
 ```
 
-### Step 3: Verify
+### Step 2: Verify
 
 1. Run `opencode` in this project directory.
 2. The **Core** agent is the default primary agent.
-3. Type `@` to see available subagents (definer, planner, builder, tester, reviewer).
+3. Type `@` to see available subagents (define, plan, build, test, review).
 
 ---
 
 ## Repository Structure
 
 ```
-AGENTS.md                            # Core workflow lifecycle and rules
-
 .opencode/
 ├── agents/
-│   ├── core.md                      # Primary agent: orchestrator
-│   ├── definer.md                   # Subagent: intent extraction & spec
-│   ├── planner.md                   # Subagent: task decomposition
-│   ├── builder.md                   # Subagent: implementation
-│   ├── tester.md                    # Subagent: test validation
-│   └── reviewer.md                  # Subagent: code review
-└── router/
-    └── skill-router.md              # Intent-based skill selection
-
-docs/
-├── ARCHITECTURE.md                  # Full system design
-├── primary-agent-reference.md       # Orchestrator design notes
-└── agentic/
-    ├── definer.md                   # Spec output (written by @definer)
-    ├── planner.md                   # Plan output (written by @planner)
-    └── tester.md                    # Test results (written by @tester)
-
-skills/                              # 28 skills (copy to ~/.agents/skills/)
-├── api-and-interface-design/
-├── code-generation/
-├── testing/
-└── ... (28 total)
-
-references/
-├── tech-stack.md                    # Default technology preferences
-├── testing-patterns.md              # Testing patterns and anti-patterns
-├── security-checklist.md            # Security checklist
-└── performance-checklist.md         # Performance optimization patterns
+│   ├── core.md                  # Primary agent: orchestrator (this is the default)
+│   ├── define.md                # Subagent: intent extraction & spec
+│   ├── plan.md                  # Subagent: task decomposition
+│   ├── build.md                 # Subagent: implementation
+│   ├── test.md                  # Subagent: test validation
+│   └── review.md                # Subagent: code review
+└── skills/                      # 15 skills, loaded on demand by each subagent
+    ├── api-and-interface-design/
+    ├── browser-testing-with-devtools/
+    ├── code-simplification/
+    ├── context-engineering/
+    ├── debugging-and-error-recovery/
+    ├── doubt-driven-development/
+    ├── frontend-ui-engineering/
+    ├── idea-refine/
+    ├── incremental-implementation/
+    ├── interview-me/
+    ├── performance-optimization/
+    ├── planning-and-task-breakdown/
+    ├── source-driven-development/
+    ├── spec-driven-development/
+    └── test-driven-development/
 ```
 
 ---
@@ -130,33 +171,27 @@ opencode
 
 ### What happens:
 
-1. **Core** understands your request
-2. **Core** → **@definer** → extracts intent, refines ideas, writes spec to `docs/agentic/definer.md`
-3. **Core** reads the spec
-4. **Core** → **@planner** → writes plan to `docs/agentic/planner.md`
-5. **Core** reads the plan
-6. **Core** → **@builder** → implements code and tests
-7. **Core** → **@tester** → validates, writes results to `docs/agentic/tester.md`
-8. **Core** reads the results
-   - ✅ All clear → **@reviewer** evaluates quality
-   - ❌ Bugs found → Builder fixes, Tester re-tests
-9. **Core** delivers the final result to you
+1. **Core** triages your request (trivial, non-trivial, or ambiguous)
+2. **Core** → `@define` → interviews, refines ideas, writes spec
+3. **Core** reads the spec, confirms acceptance criteria
+4. **Core** → `@plan` → decomposes spec into task slices
+5. **Core** reviews the task list
+6. **Core** → `@build` → implements one slice at a time
+7. **Core** → `@test` → validates against acceptance criteria
+   - ✅ All clear → `@review` evaluates quality
+   - ❌ Bugs found → `@build` fixes, `@test` re-tests
+8. **Core** → `@review` → simplifies and optimizes
+9. **Core** delivers the final result with a Delivery Summary
 
 ### Available Subagents
 
-| Agent | @mention | Purpose |
-|-------|----------|---------|
-| **Definer** | `@definer` | Extracts intent, refines ideas, writes spec to `docs/agentic/definer.md` |
-| **Planner** | `@planner` | Decomposes tasks, writes to `docs/agentic/planner.md` |
-| **Builder** | `@builder` | Implements according to plan |
-| **Tester** | `@tester` | Validates, writes to `docs/agentic/tester.md` |
-| **Reviewer** | `@reviewer` | Read-only code quality evaluation |
-
----
-
-## Tech Stack Adaptation
-
-Edit `references/tech-stack.md` to retarget for any technology stack.
+| Agent      | @mention  | Purpose                                                                      |
+| ---------- | --------- | ---------------------------------------------------------------------------- |
+| **Define** | `@define` | Surfaces true requirements, interviews, writes spec with acceptance criteria |
+| **Plan**   | `@plan`   | Decomposes spec into small, independently verifiable task slices             |
+| **Build**  | `@build`  | Implements one thin vertical slice at a time                                 |
+| **Test**   | `@test`   | Writes failing tests first, verifies behavior, debugs failures               |
+| **Review** | `@review` | Removes unnecessary complexity, measures before optimizing                   |
 
 ---
 
@@ -172,6 +207,7 @@ permission:
   read: allow
   edit: deny
 ---
+
 System prompt instructions here...
 ```
 
