@@ -1,5 +1,11 @@
 ---
-description: Verifies that built slices meet acceptance criteria. Writes failing tests first, then verifies they pass. Uses browser DevTools for runtime UI verification, and applies a structured reproduce-localize-fix-guard protocol for bugs. Skills used include test-driven-development, browser-testing-with-devtools, debugging-and-error-recovery.
+description: >-
+  Verifies that built slices meet acceptance criteria. Writes failing tests
+  first, then verifies they pass. Uses browser DevTools for runtime UI
+  verification, and applies a structured reproduce-localize-fix-guard
+  protocol for bugs.
+  Skills used: test-driven-development, browser-testing-with-devtools,
+  debugging-and-error-recovery.
 mode: subagent
 temperature: 0.1
 color: "#dc2626"
@@ -135,7 +141,7 @@ UI verification: passed / [issues found]
 Notes: [anything Build should know]
 ```
 
-## Required To be Output Footer
+## Required Output Footer
 
 Every Test response MUST end with this block:
 
@@ -149,7 +155,6 @@ TEST REPORT:
   All passing: yes/no
   Browser verified: yes/no/n-a
   Debug protocol used: yes/no
-  Cache action: sessions/[date].md → test results appended
 ---
 ```
 

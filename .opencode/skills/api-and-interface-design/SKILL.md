@@ -12,14 +12,11 @@ metadata:
 
 ## What I Do
 
-I force interface design to happen before implementation. The contract is written first, agreed upon, and then the
-internals are built to satisfy it. This prevents the most expensive kind of rework: refactoring a correct implementation
-because the interface was wrong.
+I force interface design to happen before implementation. The contract is written first, agreed upon, and then the internals are built to satisfy it. This prevents the most expensive kind of rework: refactoring a correct implementation because the interface was wrong.
 
 ## When to Use Me
 
 Use me when creating or changing:
-
 - Public functions or modules (called from more than one place)
 - HTTP/REST/GraphQL API endpoints
 - Component props interfaces (in UI work)
@@ -59,8 +56,8 @@ Write the contract as a type signature + doc comment before any implementation:
  */
 async function getUserPermissions(
   userId: string,
-  context: PermissionContext,
-): Promise<Permission[]>;
+  context: PermissionContext
+): Promise<Permission[]>
 ```
 
 ### Step 3: Write the contract checklist
@@ -68,25 +65,21 @@ async function getUserPermissions(
 Before implementing, answer:
 
 **Inputs:**
-
 - [ ] What types are accepted? Are they validated, or is that the caller's job?
 - [ ] What are the valid ranges / formats? (empty string? null? negative number?)
 - [ ] Who is responsible for sanitizing inputs?
 
 **Outputs:**
-
 - [ ] What is returned on success? Always the same shape?
 - [ ] What is returned on "not found"? (null, empty array, or an error?)
 - [ ] Is the return value stable? (can callers cache it?)
 
 **Errors:**
-
 - [ ] What can go wrong, and how is each case signaled? (exception type, error code, null, union type)
 - [ ] Are errors recoverable? Should the caller retry?
 - [ ] Is the error message safe to show to end users, or internal-only?
 
 **Side Effects:**
-
 - [ ] Does this mutate state? What state, and under what conditions?
 - [ ] Does this have network calls? Can it fail silently?
 - [ ] Is it idempotent? Can it be called twice safely?
@@ -94,13 +87,11 @@ Before implementing, answer:
 ### Step 4: Design for the caller, not the implementer
 
 The interface is used from the outside. Design from the outside in:
-
 - What does the caller have available? Use those types.
 - What does the caller need back? Return exactly that.
 - What does the caller not care about? Hide it.
 
 Common anti-pattern: leaking implementation types into the public interface.
-
 ```typescript
 // Bad: caller now depends on your DB schema
 getUserById(id: string): Promise<DatabaseRow>
@@ -112,7 +103,6 @@ getUserById(id: string): Promise<User | null>
 ### Step 5: Version for change
 
 For interfaces that will be used externally (API endpoints, npm packages, event schemas):
-
 - Consider what a breaking change would look like
 - Add a version field to event schemas
 - Use additive changes (new optional fields) before breaking changes
@@ -132,7 +122,6 @@ DELETE /resources/:id       → delete (idempotent, returns 204)
 ```
 
 Status code contract:
-
 - `200` — success with body
 - `201` — created; include `Location` header
 - `204` — success, no body
@@ -148,19 +137,18 @@ Status code contract:
 
 Before finalizing an interface, ask: "How painful would a breaking change be?"
 
-| Stability Level | Used by                 | Change policy                    |
-|-----------------|-------------------------|----------------------------------|
-| Internal        | 1 file                  | Change freely                    |
-| Module          | 1 module/package        | Coordinate within the module     |
-| Service         | Multiple services/teams | Deprecate before remove; version |
-| Public/External | Third parties           | Never break; only extend         |
+| Stability Level | Used by | Change policy |
+|---|---|---|
+| Internal | 1 file | Change freely |
+| Module | 1 module/package | Coordinate within the module |
+| Service | Multiple services/teams | Deprecate before remove; version |
+| Public/External | Third parties | Never break; only extend |
 
 Match the rigor of the design process to the stability level.
 
 ## Output: Interface Doc
 
 For each new interface in a slice, produce:
-
 ```
 ## Interface: [name]
 Signature: [type signature]

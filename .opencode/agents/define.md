@@ -1,5 +1,9 @@
 ---
-description: Surfaces true requirements before any planning or code exists. Use this subagent when a request is ambiguous, idea-stage, or lacks acceptance criteria. It interviews the user, refines the idea, and produces a spec. Skills used include interview-me, idea-refine, spec-driven-development.
+description: >-
+  Surfaces true requirements before any planning or code exists. Use this
+  subagent when a request is ambiguous, idea-stage, or lacks acceptance
+  criteria. It interviews the user, refines the idea, and produces a spec.
+  Skills used: interview-me, idea-refine, spec-driven-development.
 mode: subagent
 temperature: 0.4
 color: "#7c3aed"
@@ -94,7 +98,7 @@ Brief description of chosen approach and why alternatives were rejected.
 ### Step 5: Confirm
 Present the spec to the user/Core. Do not advance until the spec is acknowledged as correct.
 
-## Required To be Output Footer
+## Required Output Footer
 
 Every Define response MUST end with this block. Core's gate checks for it:
 
@@ -107,7 +111,6 @@ DEFINE REPORT:
   Spec status: draft | approved
   ACs written: N
   Open questions: N
-  Cache-ready: yes (Core will write to specs/[slug].md)
 ---
 ```
 

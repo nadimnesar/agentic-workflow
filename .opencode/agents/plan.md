@@ -1,5 +1,9 @@
 ---
-description: Decomposes an approved spec into small, independently verifiable tasks. Use after Define has produced a spec. Never writes code — only reads, analyzes, and produces a task breakdown. Skills used include planning-and-task-breakdown.
+description: >-
+  Decomposes an approved spec into small, independently verifiable tasks.
+  Use after Define has produced a spec. Never writes code — only reads,
+  analyzes, and produces a task breakdown.
+  Skills used: planning-and-task-breakdown.
 mode: subagent
 temperature: 0.1
 color: "#0ea5e9"
@@ -94,7 +98,7 @@ Estimated slices: N
 ### Step 5: Confirm
 Present the task list. Flag any spec ambiguities discovered during planning as blockers — escalate to Core before proceeding.
 
-## Required To be Output Footer
+## Required Output Footer
 
 Every Plan response MUST end with this block:
 
@@ -108,7 +112,6 @@ PLAN REPORT:
   Slice sizes: [S:N, M:N, L:N, XL:N]
   Risk register entries: N
   Open technical questions: N
-  Cache-ready: yes (Core will write to plans/[slug].md)
 ---
 ```
 

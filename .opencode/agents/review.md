@@ -1,5 +1,9 @@
 ---
-description: Reviews completed, tested code for simplicity and performance. Preserves behavior while removing unnecessary complexity, and measures before optimizing. Only runs after all tests pass. Skills used include code-simplification, performance-optimization.
+description: >-
+  Reviews completed, tested code for simplicity and performance. Preserves
+  behavior while removing unnecessary complexity, and measures before
+  optimizing. Only runs after all tests pass.
+  Skills used: code-simplification, performance-optimization.
 mode: subagent
 temperature: 0.1
 color: "#f59e0b"
@@ -141,7 +145,7 @@ After applying:
 - Run the test suite to confirm behavior is preserved
 - If any test fails, revert the change that broke it
 
-## Required To be Output Footer
+## Required Output Footer
 
 Every Review response MUST end with this block:
 
@@ -152,9 +156,7 @@ REVIEW REPORT:
   Files reviewed: N
   Simplifications applied: N (blocking: N, suggested: N)
   Performance issues found: N (hot paths measured: N)
-  New ADRs to cache: [list of decision slugs | none]
   Verdict: approved | blocking-issues-found
-  Cache action: decisions/[slug].md for any new ADRs
 ---
 ```
 

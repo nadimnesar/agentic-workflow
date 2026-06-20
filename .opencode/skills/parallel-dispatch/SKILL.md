@@ -13,16 +13,13 @@ metadata:
 
 ## What I Do
 
-I allow Core to run multiple subagent tasks concurrently when those tasks have no dependency on each other. This reduces
-total wall-clock time for multi-slice features without sacrificing the sequential guarantees that correctness depends
-on.
+I allow Core to run multiple subagent tasks concurrently when those tasks have no dependency on each other. This reduces total wall-clock time for multi-slice features without sacrificing the sequential guarantees that correctness depends on.
 
 ## When Parallelism Is Safe
 
 Parallelism is safe when tasks have **no shared mutable state** and **no output dependency**.
 
 ### Safe to parallelize:
-
 - Multiple `@explore` / `@scout` investigations with no overlapping files
 - `@define` interviews for independent sub-features (if the top-level feature was decomposed)
 - `@build` slices that touch **completely separate** files/modules
@@ -30,7 +27,6 @@ Parallelism is safe when tasks have **no shared mutable state** and **no output 
 - `@review` reviewing independently built modules
 
 ### Never parallelize:
-
 - Any two tasks that write to the same file
 - `@build` slice N+1 before `@build` slice N is complete and tested
 - `@test` for a slice while `@build` is still working on it
@@ -67,8 +63,7 @@ Level 2 (serial):   Slice 4           (after level 1 complete)
 
 ### Step 3: Dispatch each level concurrently
 
-Use the Task tool to dispatch all slices in a level simultaneously. OpenCode's task tool creates independent child
-sessions that run concurrently.
+Use the Task tool to dispatch all slices in a level simultaneously. OpenCode's task tool creates independent child sessions that run concurrently.
 
 ---
 
@@ -82,15 +77,13 @@ PARALLEL_DISPATCH: level=[N] tasks=[count]
 TASK_1:
   agent: @build
   slice: [slice name]
-  cache_key: plans/[slug].md → slice [N]
-  context: [relevant cache + spec for this slice only]
+  context: [relevant spec + plan slice for this task only]
   files_written: [expected files — for conflict detection]
   
 TASK_2:
   agent: @build
   slice: [other slice name]
-  cache_key: plans/[slug].md → slice [M]
-  context: [relevant cache + spec for this slice only]
+  context: [relevant spec + plan slice for this task only]
   files_written: [expected files — must not overlap with TASK_1]
 
 SYNCHRONIZATION_POINT:
@@ -110,12 +103,10 @@ conflict = any file appears in more than one task's files_written list
 ```
 
 If a conflict is detected:
-
 - Split the conflicting tasks into separate sequential levels
 - Do not attempt to parallelize tasks that share write targets
 
 Example:
-
 ```
 Task A writes: src/auth/token.ts
 Task B writes: src/auth/token.ts  ← CONFLICT
@@ -134,13 +125,10 @@ When all tasks in a parallel level complete, Core:
 
 1. **Collects all outputs** from child sessions
 2. **Checks all gates** — every task must have passed its gate before the next level starts
-3. **Merges cache writes** — each task may have written to a different cache key; Core updates index.md
-4. **Runs cross-task integration check** — if tasks touched different modules, confirm their interfaces are compatible
-   before proceeding
-5. **Dispatches next level** or reports completion
+3. **Runs cross-task integration check** — if tasks touched different modules, confirm their interfaces are compatible before proceeding
+4. **Dispatches next level** or reports completion
 
 ### Aggregation report format (Core produces this internally):
-
 ```
 LEVEL [N] AGGREGATION:
   Tasks completed: [N/N]
@@ -170,7 +158,6 @@ PARALLEL_TEST_DISPATCH:
 ```
 
 Test suites for independent slices can be run concurrently because:
-
 - Each slice has its own test files
 - Independent test suites don't share mutable state (assuming proper test isolation)
 - A failure in one slice's tests doesn't affect another slice's test run
@@ -189,28 +176,25 @@ PARALLEL_INVESTIGATION:
     - "Are there existing rate-limiting utilities?"
 
   dispatch concurrently:
-    @explore → question 1 → cache: decisions/auth-token-refresh-pattern.md
-    @explore → question 2 → cache: decisions/test-patterns-observed.md
-    @scout   → question 3 → cache: decisions/rate-limiting-utilities.md
+    @explore → question 1
+    @explore → question 2
+    @scout   → question 3
 
   aggregate: inject all three findings into @plan context
 ```
 
-This pattern is especially useful at the start of Plan, where understanding multiple areas of the codebase
-simultaneously is both safe and faster.
+This pattern is especially useful at the start of Plan, where understanding multiple areas of the codebase simultaneously is both safe and faster.
 
 ---
 
 ## When to Use This Skill
 
 Load this skill when:
-
 - The task plan has 3+ slices and at least 2 have no dependency between them
 - Core needs to investigate multiple independent areas before Planning
 - A feature has clearly independent frontend and backend slices
 
 Do not load this skill when:
-
 - The task is a single slice
 - All slices have sequential dependencies
 - The task is ambiguous and needs full Define first (parallelism introduces confusion when requirements aren't settled)
@@ -220,7 +204,6 @@ Do not load this skill when:
 ## Failure Handling in Parallel Execution
 
 If one task in a parallel level fails its gate:
-
 1. **Do not cancel sibling tasks** that are still running — let them complete
 2. **Do not advance to the next level** — a level is atomic
 3. After all tasks complete: report all failures to Core

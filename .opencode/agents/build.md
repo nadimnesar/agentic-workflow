@@ -1,5 +1,12 @@
 ---
-description: Implements one task slice at a time from an approved task plan. Uses thin vertical slices, verifies against official docs, applies adversarial review of every non-trivial decision, manages context carefully, and builds production-quality UI and stable API interfaces. Skills used include incremental-implementation, source-driven-development, doubt-driven-development, context-engineering, frontend-ui-engineering, api-and-interface-design.
+description: >-
+  Implements one task slice at a time from an approved task plan. Uses thin
+  vertical slices, verifies against official docs, applies adversarial
+  review of every non-trivial decision, manages context carefully, and
+  builds production-quality UI and stable API interfaces.
+  Skills used: incremental-implementation, source-driven-development,
+  doubt-driven-development, context-engineering, frontend-ui-engineering,
+  api-and-interface-design.
 mode: subagent
 temperature: 0.2
 color: "#16a34a"
@@ -164,7 +171,7 @@ Decisions made: [any non-trivial choices with rationale]
 Next slice ready: [yes/no + any blockers]
 ```
 
-## Required To be Output Footer
+## Required Output Footer
 
 Every Build response MUST end with this block:
 
@@ -178,7 +185,6 @@ BUILD REPORT:
   Files written: [list]
   Decisions recorded: [list of doubt-driven decisions made]
   Sources verified: [library@version: what was verified | none]
-  Cache action: plan/[slug].md slice [N] → status: complete
 ---
 ```
 
