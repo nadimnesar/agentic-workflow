@@ -7,10 +7,13 @@ description: >-
 mode: subagent
 temperature: 0.4
 color: "#7c3aed"
+hidden: true
+steps: 30
 permission:
   read: allow
   edit: deny
   bash: deny
+  question: allow
   skill:
     "interview-me": allow
     "idea-refine": allow

@@ -6,7 +6,7 @@ compatibility: opencode
 metadata:
   phase: orchestration
   agent: core
-  load-order: "3"
+  load-order: "2"
 ---
 
 # Parallel Dispatch
@@ -22,14 +22,14 @@ Parallelism is safe when tasks have **no shared mutable state** and **no output 
 ### Safe to parallelize:
 - Multiple `@explore` / `@scout` investigations with no overlapping files
 - `@define` interviews for independent sub-features (if the top-level feature was decomposed)
-- `@build` slices that touch **completely separate** files/modules
+- `@implement` slices that touch **completely separate** files/modules
 - `@test` running different test suites for independent slices that are already complete
 - `@review` reviewing independently built modules
 
 ### Never parallelize:
 - Any two tasks that write to the same file
-- `@build` slice N+1 before `@build` slice N is complete and tested
-- `@test` for a slice while `@build` is still working on it
+- `@implement` slice N+1 before `@implement` slice N is complete and tested
+- `@test` for a slice while `@implement` is still working on it
 - `@review` while `@test` has failing tests
 - Any pair of tasks where task B depends on task A's output
 
@@ -75,13 +75,13 @@ When dispatching multiple tasks in parallel, Core uses this format:
 PARALLEL_DISPATCH: level=[N] tasks=[count]
 
 TASK_1:
-  agent: @build
+  agent: @implement
   slice: [slice name]
   context: [relevant spec + plan slice for this task only]
   files_written: [expected files — for conflict detection]
   
 TASK_2:
-  agent: @build
+  agent: @implement
   slice: [other slice name]
   context: [relevant spec + plan slice for this task only]
   files_written: [expected files — must not overlap with TASK_1]
@@ -180,7 +180,7 @@ PARALLEL_INVESTIGATION:
     @explore → question 2
     @scout   → question 3
 
-  aggregate: inject all three findings into @plan context
+  aggregate: inject all three findings into @planner context
 ```
 
 This pattern is especially useful at the start of Plan, where understanding multiple areas of the codebase simultaneously is both safe and faster.

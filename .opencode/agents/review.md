@@ -7,6 +7,8 @@ description: >-
 mode: subagent
 temperature: 0.1
 color: "#f59e0b"
+hidden: true
+steps: 30
 permission:
   read: allow
   edit:
@@ -16,9 +18,6 @@ permission:
     "git diff*": allow
     "git log*": allow
     "git blame*": allow
-    "grep *": allow
-    "find *": allow
-    "cat *": allow
     "wc *": allow
     "npm run lint*": allow
     "npm run build*": ask

@@ -95,7 +95,7 @@ When this happens:
 | Bug fix | The failing test, the buggy file, surrounding caller context | Unrelated modules |
 | Refactor | File being refactored, its tests, callers (for interface impact) | Internal implementation of callers |
 
-## Notes for the Build Agent
+## Notes for the Implement Agent
 
 When invoking `@explore` to find files, use the result to decide what to load — not as a reason to load everything it finds.
 

@@ -7,6 +7,7 @@ description: >-
 mode: primary
 temperature: 0.2
 color: primary
+steps: 60
 permission:
   read: allow
   edit: ask
@@ -19,10 +20,12 @@ permission:
   task:
     "*": deny
     "define": allow
-    "plan": allow
-    "build": allow
+    "planner": allow
+    "implement": allow
     "test": allow
     "review": allow
+    "explore": allow
+    "scout": allow
   skill:
     "orchestration-protocol": allow
     "parallel-dispatch": allow
@@ -60,13 +63,13 @@ User Request
 [orchestration-protocol: triage]
      │
      ▼
-┌─────────┐    ┌─────────┐    ┌───────────────┐    ┌─────────┐    ┌──────────┐
-│ @define │ -> │  @plan  │ -> │ @build        │ -> │  @test  │ -> │ @review  │
-│ Skills: │    │ Skills: │    │ [parallel if  │    │ Skills: │    │ Skills:  │
-│interview│    │planning │    │  safe]        │    │tdd      │    │simplify  │
-│idea-ref │    │task-bkd │    │ Skills:       │    │browser  │    │perf-opt  │
-│spec-drv │    │         │    │ incr-impl     │    │debug    │    │          │
-└─────────┘    └─────────┘    │ src-driven    │    └─────────┘    └──────────┘
+┌─────────┐    ┌──────────┐    ┌───────────────┐    ┌─────────┐    ┌──────────┐
+│ @define │ -> │ @planner │ -> │ @implement    │ -> │  @test  │ -> │ @review  │
+│ Skills: │    │ Skills:  │    │ [parallel if  │    │ Skills: │    │ Skills:  │
+│interview│    │planning  │    │  safe]        │    │tdd      │    │simplify  │
+│idea-ref │    │task-bkd  │    │ Skills:       │    │browser  │    │perf-opt  │
+│spec-drv │    │          │    │ incr-impl     │    │debug    │    │          │
+└─────────┘    └──────────┘    │ src-driven    │    └─────────┘    └──────────┘
                                │ doubt-driven  │
                                │ ctx-eng       │
                                │ frontend-ui   │
@@ -80,7 +83,7 @@ User Request
 
 ### Stage 0 — Triage
 1. Load `orchestration-protocol` → read the pre-action decision tree
-2. If trivial task: route directly to `@build`
+2. If trivial task: route directly to `@implement`
 3. If non-trivial: proceed to Stage 1
 
 ### Stage 1 — Define
@@ -101,10 +104,10 @@ GATE_CRITERIA:
 ```
 
 ### Stage 2 — Plan
-Dispatch `@plan` with the approved spec.
+Dispatch `@planner` with the approved spec.
 
 ```
-TASK: @plan
+TASK: @planner
 CONTEXT:
   spec: [full spec content]
 INPUT: [approved spec]
@@ -121,7 +124,7 @@ After Plan returns: build the dependency graph from slice `Dependencies` fields.
 For each level in the dependency graph, dispatch slices (parallel if safe, sequential if deps exist).
 
 ```
-TASK: @build
+TASK: @implement
 CONTEXT:
   spec_slice: [ACs relevant to this slice]
   plan_slice: [this slice's task definition]
@@ -133,7 +136,7 @@ GATE_CRITERIA:
   - no failing tests
 ```
 
-If gate fails: return to `@build` with specific failures.
+If gate fails: return to `@implement` with specific failures.
 
 ### Stage 4 — Test
 Dispatch after each Build level completes. Can run per-slice in parallel (see `parallel-dispatch`).
@@ -151,7 +154,7 @@ GATE_CRITERIA:
   - browser verification if UI slices present
 ```
 
-If gate fails: return to `@build` with specific failing tests. Do NOT proceed to Review.
+If gate fails: return to `@implement` with specific failing tests. Do NOT proceed to Review.
 
 ### Stage 5 — Review
 Dispatch only after all Test gates pass.
@@ -169,7 +172,7 @@ GATE_CRITERIA:
   - verdict: approved or blocking items listed
 ```
 
-If blocking items: route to `@build`, re-run `@test`, then re-run `@review`.
+If blocking items: route to `@implement`, re-run `@test`, then re-run `@review`.
 
 ---
 
@@ -177,8 +180,8 @@ If blocking items: route to `@build`, re-run `@test`, then re-run `@review`.
 
 If any stage fails its gate:
 - **Define → Plan** fails: return to `@define` with clarifying questions.
-- **Plan → Build** fails: return to `@plan` with scope concerns.
-- **Build → Test** fails: return to `@build` with specific failing criteria.
+- **Plan → Build** fails: return to `@planner` with scope concerns.
+- **Build → Test** fails: return to `@implement` with specific failing criteria.
 - **Test → Review** fails: return to `@test` — do not review broken code.
 - **Review → Done** fails: apply suggestions, re-test if behavior changes.
 

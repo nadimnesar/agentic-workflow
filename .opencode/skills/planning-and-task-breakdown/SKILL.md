@@ -16,7 +16,7 @@ I decompose a spec into the smallest tasks that still deliver working, testable 
 
 ## When to Use Me
 
-Use me after Define has produced an approved spec with acceptance criteria. I am the sole skill of the Plan agent.
+Use me after Define has produced an approved spec with acceptance criteria. I am the sole skill of the Planner agent.
 
 ## What Makes a Good Task
 

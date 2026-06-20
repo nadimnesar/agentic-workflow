@@ -38,16 +38,16 @@ Q1: Is this a direct user request or a stage report from a subagent?
 Q2: Is this request trivial?
     Trivial = one of: fix a typo, rename a symbol, toggle a config value,
               update a comment, bump a version number
-    YES → route directly to @build
+    YES → route directly to @implement
     NO  → continue
 
 Q3: Are requirements fully specified with measurable acceptance criteria?
     NO (ambiguous, idea-stage, incomplete) → dispatch @define FIRST
     YES (explicit, clear ACs provided)     → write spec directly, continue
 
-Q4: Dispatch @plan with spec.
+Q4: Dispatch @planner with spec.
 
-Q5: Dispatch @build with task plan.
+Q5: Dispatch @implement with task plan.
     After each slice report: dispatch @test with that slice's output.
     After all slices: dispatch @review.
 ```
@@ -103,7 +103,7 @@ Output must contain:
 - [ ] Risk register present
 - [ ] No slice is estimated XL without being split
 
-If any item is missing: **return to @plan with specific gap**.
+If any item is missing: **return to @planner with specific gap**.
 
 ### Build Gate (per slice)
 Output must contain:
@@ -112,7 +112,7 @@ Output must contain:
 - [ ] Tests: added/updated confirmation
 - [ ] No failing tests
 
-If tests are failing or ACs are unchecked: **return to @build with specific failures**.
+If tests are failing or ACs are unchecked: **return to @implement with specific failures**.
 
 ### Test Gate
 Output must contain:
@@ -120,7 +120,7 @@ Output must contain:
 - [ ] Zero regressions
 - [ ] Browser verification complete (if UI)
 
-If any test is failing or missing: **return to @build then re-run @test**.
+If any test is failing or missing: **return to @implement then re-run @test**.
 
 ### Review Gate
 Output must contain:
@@ -128,7 +128,7 @@ Output must contain:
 - [ ] Performance report
 - [ ] Verdict: approved / blocking issues
 
-If blocking issues exist: **route to @build then re-run @test before re-review**.
+If blocking issues exist: **route to @implement then re-run @test before re-review**.
 
 ---
 
@@ -139,10 +139,12 @@ At the end of every message Core sends, append this block:
 ```
 ---
 PROTOCOL AUDIT:
-  Stage: [current stage name]
-  Last subagent dispatched: [name or "none"]
-  Gate passed: [yes / pending / failed — reason]
-  Next action: [dispatch @X / await user / done]
+  Skills loaded: [orchestration-protocol, parallel-dispatch if applicable]
+  Stage: [current stage]
+  Last subagent dispatched: [name + dispatch format used: structured/bare]
+  Gate result: [passed / pending / failed — reason]
+  Parallel: [yes — level N, tasks M | no]
+  Next: [dispatch @X | await subagent | await user | done]
 ---
 ```
 
@@ -158,8 +160,8 @@ The ONLY legitimate reasons to skip a stage:
 |---|---|
 | Define | User provided a complete spec with ACs in their message |
 | Plan | Task has exactly 1 slice and it maps 1:1 to a single AC |
-| Test | Trivial task (see Q3 above) |
-| Review | Trivial task (see Q3 above) |
+| Test | Trivial task (see Q2 above) |
+| Review | Trivial task (see Q2 above) |
 
 Every bypass must be logged in the protocol audit block with the reason.
 

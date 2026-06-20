@@ -9,6 +9,8 @@ description: >-
 mode: subagent
 temperature: 0.1
 color: "#dc2626"
+hidden: true
+steps: 40
 permission:
   read: allow
   edit:
@@ -32,9 +34,6 @@ permission:
     "python -m pytest*": allow
     "cargo test*": allow
     "go test*": allow
-    "grep *": allow
-    "find *": allow
-    "cat *": allow
     "git diff*": allow
     "git status": allow
   glob: allow

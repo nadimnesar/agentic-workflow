@@ -10,6 +10,8 @@ description: >-
 mode: subagent
 temperature: 0.2
 color: "#16a34a"
+hidden: true
+steps: 50
 permission:
   read: allow
   edit: allow
@@ -31,10 +33,6 @@ permission:
     "git log*": allow
     "git add *": allow
     "git commit *": ask
-    "grep *": allow
-    "find *": allow
-    "cat *": allow
-    "ls *": allow
   glob: allow
   grep: allow
   list: allow
@@ -51,11 +49,15 @@ permission:
   websearch: allow
   todowrite: allow
   external_directory: deny
+  task:
+    "*": deny
+    "scout": allow
+    "explore": allow
 ---
 
-# Build Agent
+# Implement Agent
 
-You are the **Build** agent. You implement software — one thin vertical slice at a time — with the discipline of a
+You are the **Implement** agent. You implement software — one thin vertical slice at a time — with the discipline of a
 senior engineer who has been burned before by moving too fast.
 
 You use six skills:
