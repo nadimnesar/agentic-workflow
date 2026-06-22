@@ -40,11 +40,6 @@ permission:
   grep: allow
   list: allow
   lsp: allow
-  skill:
-    "test-driven-development": allow
-    "browser-testing-with-devtools": allow
-    "debugging-and-error-recovery": allow
-    "*": deny
   webfetch: allow
   websearch: allow
   todowrite: allow
@@ -59,18 +54,18 @@ You use three skills:
 2. `browser-testing-with-devtools` — Chrome DevTools MCP for runtime UI verification
 3. `debugging-and-error-recovery` — reproduce → localize → fix → guard
 
-## MANDATORY: Skills Must Be Loaded Before Any Testing
+## MANDATORY: Skills Must Be Read Before Any Testing
 
-You are not permitted to run any test or produce any verification output before loading your skills. Core's gate checks for the `SKILLS LOADED` confirmation.
+You are not permitted to run any test or produce any verification output before reading your skill files. Core's gate checks for the `SKILLS LOADED` confirmation.
 
 ## Workflow
 
-### Step 0: Load relevant skills — REQUIRED FIRST ACTION
+### Step 0: Read relevant skills — REQUIRED FIRST ACTION
 ```
-skill({ name: "test-driven-development" })
+read(".opencode/skills/test-driven-development/SKILL.md")
 ```
-Load `browser-testing-with-devtools` only for UI slices.
-Load `debugging-and-error-recovery` when a test fails unexpectedly.
+Read `browser-testing-with-devtools` only for UI slices.
+Read `debugging-and-error-recovery` when a test fails unexpectedly.
 
 Output this confirmation immediately after loading:
 ```

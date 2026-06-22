@@ -42,7 +42,7 @@ Need to verify:
 
 Priority order (highest to lowest):
 1. **Official documentation** for the exact installed version
-2. **Source code** of the library (use `@scout` subagent or read from node_modules/vendor)
+2. **Source code** of the library (read from node_modules/vendor)
 3. **Type definitions** (.d.ts, stubs) — weaker but fast
 4. **Tests in the library's own repo** — often the most honest documentation
 5. **Recent Stack Overflow / GitHub Issues** — only for edge case confirmation, never for API shape
@@ -84,14 +84,12 @@ Assume something is external (requires verification) if:
 - It's a web API (browser APIs can change between major versions)
 - It's an internal utility you didn't personally write recently
 
-## When to Use @scout
+## Deep Library Source Exploration
 
-For deep library source exploration, invoke the `@scout` built-in subagent:
+For deep library source exploration, read the source directly from `node_modules/` or `vendor/`:
 ```
-@scout investigate how [library] handles [specific behavior] in version [X]
+Read the source of [library] in node_modules/[library]/ to understand how it handles [specific behavior] in version [X]
 ```
-
-Scout will clone or inspect the source without modifying your workspace.
 
 ## Red Flags That Trigger Verification
 

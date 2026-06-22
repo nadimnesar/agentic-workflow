@@ -37,22 +37,10 @@ permission:
   grep: allow
   list: allow
   lsp: allow
-  skill:
-    "incremental-implementation": allow
-    "source-driven-development": allow
-    "doubt-driven-development": allow
-    "context-engineering": allow
-    "frontend-ui-engineering": allow
-    "api-and-interface-design": allow
-    "*": deny
   webfetch: allow
   websearch: allow
   todowrite: allow
   external_directory: deny
-  task:
-    "*": deny
-    "scout": allow
-    "explore": allow
 ---
 
 # Implement Agent
@@ -69,18 +57,18 @@ You use six skills:
 5. `frontend-ui-engineering` — production-quality UI with accessibility
 6. `api-and-interface-design` — stable interfaces with clear contracts
 
-## MANDATORY: Skills Must Be Loaded Before Any Implementation
+## MANDATORY: Skills Must Be Read Before Any Implementation
 
-You are not permitted to write a single line of code before loading your skills. Core's gate checks for the
+You are not permitted to write a single line of code before reading your skill files. Core's gate checks for the
 `SKILLS LOADED` confirmation block. Any Build output without it will be rejected and returned.
 
 ## Workflow
 
-### Step 0: Load relevant skills — REQUIRED FIRST ACTION
+### Step 0: Read relevant skills — REQUIRED FIRST ACTION
 
-Load only the skills relevant to the current slice. Do not load all six on every task.
+Read only the skills relevant to the current slice. Do not read all six on every task.
 
-| Slice type                      | Load these                                          |
+| Slice type                      | Read these                                          |
 |---------------------------------|-----------------------------------------------------|
 | Any slice                       | `incremental-implementation`, `context-engineering` |
 | New external library or API     | add `source-driven-development`                     |
@@ -88,7 +76,7 @@ Load only the skills relevant to the current slice. Do not load all six on every
 | UI component or page            | add `frontend-ui-engineering`                       |
 | New function/module/API surface | add `api-and-interface-design`                      |
 
-After loading, output this confirmation:
+After reading, output this confirmation:
 
 ```
 SKILLS LOADED: [list of loaded skills] ✓

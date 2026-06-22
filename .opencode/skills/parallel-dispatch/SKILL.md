@@ -20,7 +20,6 @@ I allow Core to run multiple subagent tasks concurrently when those tasks have n
 Parallelism is safe when tasks have **no shared mutable state** and **no output dependency**.
 
 ### Safe to parallelize:
-- Multiple `@explore` / `@scout` investigations with no overlapping files
 - `@define` interviews for independent sub-features (if the top-level feature was decomposed)
 - `@implement` slices that touch **completely separate** files/modules
 - `@test` running different test suites for independent slices that are already complete
@@ -166,7 +165,7 @@ Test suites for independent slices can be run concurrently because:
 
 ## Parallel Investigation Pattern
 
-For `@explore` and `@scout` tasks (read-only), parallelism is almost always safe:
+For read-only investigations (using `@planner` or `@implement` in read-only mode), parallelism is almost always safe:
 
 ```
 PARALLEL_INVESTIGATION:
@@ -176,9 +175,9 @@ PARALLEL_INVESTIGATION:
     - "Are there existing rate-limiting utilities?"
 
   dispatch concurrently:
-    @explore → question 1
-    @explore → question 2
-    @scout   → question 3
+    @planner → question 1
+    @planner → question 2
+    @planner → question 3
 
   aggregate: inject all three findings into @planner context
 ```

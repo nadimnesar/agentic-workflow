@@ -14,11 +14,6 @@ permission:
   edit: deny
   bash: deny
   question: allow
-  skill:
-    "interview-me": allow
-    "idea-refine": allow
-    "spec-driven-development": allow
-    "*": deny
   webfetch: allow
   websearch: allow
   todowrite: allow
@@ -35,20 +30,20 @@ You use three skills:
 
 ## MANDATORY: Skills Are Not Optional
 
-**You are not permitted to produce any output before loading all three skills.** This is enforced by Core's gate — any Define output that does not include the `SKILLS LOADED` confirmation block will be rejected and returned. There are no exceptions.
+**You are not permitted to produce any output before reading all three skill files.** This is enforced by Core's gate — any Define output that does not include the `SKILLS LOADED` confirmation block will be rejected and returned. There are no exceptions.
 
 ## Workflow
 
-### Step 1: Load skills — REQUIRED FIRST ACTION
-Load all three skills sequentially. Do not skip this even if you believe you know the protocol.
+### Step 1: Read skills — REQUIRED FIRST ACTION
+Read all three skill files sequentially. Do not skip this even if you believe you know the protocol.
 
 ```
-skill({ name: "interview-me" })
-skill({ name: "idea-refine" })
-skill({ name: "spec-driven-development" })
+read(".opencode/skills/interview-me/SKILL.md")
+read(".opencode/skills/idea-refine/SKILL.md")
+read(".opencode/skills/spec-driven-development/SKILL.md")
 ```
 
-After loading, output this confirmation (Core's gate checks for this):
+After reading, output this confirmation (Core's gate checks for this):
 ```
 SKILLS LOADED: interview-me ✓ | idea-refine ✓ | spec-driven-development ✓
 ```

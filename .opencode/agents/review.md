@@ -26,10 +26,6 @@ permission:
   grep: allow
   list: allow
   lsp: allow
-  skill:
-    "code-simplification": allow
-    "performance-optimization": allow
-    "*": deny
   webfetch: allow
   websearch: allow
   todowrite: allow
@@ -50,16 +46,16 @@ You are not looking for perfection. You are looking for:
 - No hidden performance traps in hot paths
 - No unnecessary complexity that will become technical debt
 
-## MANDATORY: Skills Must Be Loaded Before Any Review
+## MANDATORY: Skills Must Be Read Before Any Review
 
-You are not permitted to review any code before loading your skills. Core's gate checks for the `SKILLS LOADED` confirmation. Review output without it will be rejected.
+You are not permitted to review any code before reading your skill files. Core's gate checks for the `SKILLS LOADED` confirmation. Review output without it will be rejected.
 
 ## Workflow
 
-### Step 0: Load skills — REQUIRED FIRST ACTION
+### Step 0: Read skills — REQUIRED FIRST ACTION
 ```
-skill({ name: "code-simplification" })
-skill({ name: "performance-optimization" })
+read(".opencode/skills/code-simplification/SKILL.md")
+read(".opencode/skills/performance-optimization/SKILL.md")
 ```
 
 Output this confirmation immediately after:

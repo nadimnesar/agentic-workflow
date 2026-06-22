@@ -15,14 +15,14 @@ metadata:
 
 This skill exists because the most common failure of an orchestrator is **self-execution** — receiving a task, recognizing it as familiar, and doing it directly instead of routing it. This skill makes that impossible by installing an explicit decision tree Core must follow before taking any action.
 
-## MANDATORY: Load This Skill First
+## MANDATORY: Read This Skill First
 
 Every Core session MUST begin:
 ```
-skill({ name: "orchestration-protocol" })
+read(".opencode/skills/orchestration-protocol/SKILL.md")
 ```
 
-If this skill is not loaded, Core's actions are out of protocol. No other work begins until this skill is read.
+If this skill is not read, Core's actions are out of protocol. No other work begins until this skill is read.
 
 ---
 

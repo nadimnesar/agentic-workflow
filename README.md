@@ -14,7 +14,7 @@ the agent that receives your request should think, route, and verify — never e
 At the center is **Core**, a non-coding orchestrator. Core never writes production code, never edits source files, and
 never runs implementation commands. Instead it triages each request, routes non-trivial work through a chain of
 specialized subagents — Define, Plan, Build, Test, Review — and checks an explicit gate before advancing from one stage
-to the next. Each subagent loads only the skills it needs for the current task, produces a structured report, and hands
+to the next. Each subagent reads only the skills it needs for the current task, produces a structured report, and hands
 control back to Core.
 
 The problem this solves is the most common failure mode of AI coding agents: **self-execution**. Given a familiar task,
@@ -45,7 +45,7 @@ User Request
 
 **Stages:**
 
-- **Triage** (Core) — Core loads `orchestration-protocol` and decides whether the request is trivial (routed directly to
+- **Triage** (Core) — Core reads `orchestration-protocol` and decides whether the request is trivial (routed directly to
   `@implement`) or non-trivial (enters the full pipeline).
 - **Define** (`@define`) — surfaces the real problem through a structured interview, explores alternative approaches, and produces a
   spec with Given/When/Then acceptance criteria.
@@ -79,7 +79,7 @@ so they do not appear in the `@mention` menu. See the [OpenCode agents docs](htt
 
 ## Skills
 
-Skills are loaded on demand — never all at once. Each subagent loads only the skills relevant to its current slice,
+Skills are read on demand — never all at once. Each subagent reads only the skills relevant to its current slice,
 which keeps context focused. See the [OpenCode skills docs](https://opencode.ai/docs/skills/) for the skill file format.
 
 ### Orchestration
@@ -155,7 +155,7 @@ which keeps context focused. See the [OpenCode skills docs](https://opencode.ai/
 - For non-trivial features: describe the goal to Core. It routes through the full pipeline automatically and reports a
   Delivery Summary at the end.
 - For trivial tasks (typo, rename, config toggle): Core routes directly to Build.
-- Each subagent loads only its relevant skills on demand, produces a structured report, and Core checks a gate before
+- Each subagent reads only its relevant skills on demand, produces a structured report, and Core checks a gate before
   advancing.
 - When 3 or more independent slices exist, Core fans them out concurrently (parallel-dispatch).
 - The pipeline subagents are hidden from the `@mention` menu by design — Core invokes them via the Task tool, which enforces the pipeline. Talk to Core to start a task.
@@ -198,7 +198,7 @@ A failed gate never advances forward. Core routes back to the failing stage with
 ### Parallel dispatch
 
 After Plan returns, Core builds a dependency graph from each slice's `Dependencies` field. When 3 or more independent
-slices are present, Core loads the `parallel-dispatch` skill and fans those slices out to `@implement` concurrently. Slices
+slices are present, Core reads the `parallel-dispatch` skill and fans those slices out to `@implement` concurrently. Slices
 with dependencies remain sequential. The same applies to `@test` per Build level.
 
 ### Self-audit block
@@ -223,7 +223,7 @@ If any field indicates a skipped step, Core re-evaluates before continuing.
 
 - Core never writes code — it only thinks, routes, and verifies.
 - Every stage has explicit gate criteria; Core never advances past a failed gate.
-- Skills load on-demand, not all at once (context engineering).
+- Skills read on-demand, not all at once (context engineering).
 - Thin vertical slices; each slice is testable end-to-end.
 - Source-driven: verify external APIs against official docs, never from memory.
 - Doubt-driven: adversarial review of every non-trivial decision.

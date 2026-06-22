@@ -71,7 +71,7 @@ When reviewing or extending existing code, start with `git diff` from the last k
 When you need to follow existing patterns (naming, error handling, logging), load 1–2 examples of the pattern done well, not the entire codebase's worth of examples.
 
 ### Strategy 5: Lazy Loading
-Don't load files speculatively. Load a file when you actually need it — not because you might need it. The `@explore` subagent can find files on demand without loading them into context.
+Don't load files speculatively. Load a file when you actually need it — not because you might need it. Use `glob` and `grep` tools to find files on demand without loading them into context.
 
 ## When Context Gets Too Large
 
@@ -97,7 +97,7 @@ When this happens:
 
 ## Notes for the Implement Agent
 
-When invoking `@explore` to find files, use the result to decide what to load — not as a reason to load everything it finds.
+When using `glob` and `grep` to find files, use the result to decide what to load — not as a reason to load everything it finds.
 
 Keep a running "context manifest" for the current slice:
 ```
